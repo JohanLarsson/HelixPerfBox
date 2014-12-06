@@ -29,6 +29,7 @@
                            Grid.Row="1"
                            ZoomExtentsWhenLoaded="True">
             <h:SunLight />
+            <helixPerfBox:DemoElement3D/>
             <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" />
             <helixPerfBox:Selector3D ItemsSource="{Binding BlueBalls}" />
         </h:HelixViewport3D>
