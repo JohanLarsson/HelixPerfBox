@@ -1,8 +1,14 @@
 ﻿<Application x:Class="HelixPerfBox.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:h="http://helix-toolkit.org/wpf"
+             xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <!--
+            <DataTemplate DataType="{x:Type helixPerfBox:Ball}">
+            <h:SphereVisual3D/>
+            </DataTemplate>
+        -->
     </Application.Resources>
 </Application>
