@@ -29,7 +29,15 @@
                            Grid.Row="1"
                            ZoomExtentsWhenLoaded="True">
             <h:SunLight />
-            <helixPerfBox:DemoElement3D/>
+            <ContainerUIElement3D>
+                <helixPerfBox:DemoElement3D/>
+                <helixPerfBox:DemoElement3D>
+                    <helixPerfBox:DemoElement3D.Transform>
+                        <TranslateTransform3D OffsetX="-5" OffsetY="0" OffsetZ="0"/>
+                    </helixPerfBox:DemoElement3D.Transform>
+                </helixPerfBox:DemoElement3D>
+            </ContainerUIElement3D>
+
             <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" />
             <helixPerfBox:Selector3D ItemsSource="{Binding BlueBalls}" />
         </h:HelixViewport3D>

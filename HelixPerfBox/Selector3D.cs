@@ -2,21 +2,25 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
     using System.Linq.Expressions;
+    using System.Reflection;
     using System.Threading.Tasks;
     using System.Windows;
+    using System.Windows.Automation.Peers;
     using System.Windows.Controls;
-    using System.Windows.Controls.Primitives;
     using System.Windows.Data;
-    using System.Windows.Input;
-    using System.Windows.Media;
+    using System.Windows.Markup;
     using System.Windows.Media.Media3D;
     using Gu.Reactive;
     using HelixToolkit.Wpf;
 
-    public class Selector3D : ModelVisual3D
+    using MS.Internal;
+
+    [ContentProperty("Children")]
+    public class Selector3D : UIElement3D
     {
         public static readonly DependencyProperty ItemsSourceProperty = ItemsControl.ItemsSourceProperty.AddOwner(
             typeof(Selector3D),
@@ -25,10 +29,45 @@
                 FrameworkPropertyMetadataOptions.AffectsRender,
                 OnItemsSourceChanged));
 
+        private readonly Visual3DCollection _children;
+
+        public Selector3D()
+        {
+            _children = (Visual3DCollection)Activator.CreateInstance(typeof(Visual3DCollection), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance, null, null, new object[] { this });
+        }
+
+        /// <summary>
+        /// Gets a <see cref="T:System.Windows.Media.Media3D.Visual3DCollection"/> of child elements of this <see cref="T:System.Windows.Media.Media3D.ContainerUIElement3D"/> object.
+        /// </summary>
+        /// 
+        /// <returns>
+        /// A <see cref="T:System.Windows.Media.Media3D.Visual3DCollection"/> of child elements. The default is an empty collection.
+        /// </returns>
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
+        public Visual3DCollection Children
+        {
+            get
+            {
+                return _children;
+            }
+        }
         public IEnumerable<object> ItemsSource
         {
             get { return (IEnumerable<object>)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
+        }
+
+        protected override int Visual3DChildrenCount
+        {
+            get
+            {
+                return _children.Count;
+            }
+        }
+
+        protected override Visual3D GetVisual3DChild(int index)
+        {
+            return _children[index];
         }
 
         private static async void OnItemsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
@@ -56,7 +95,6 @@
                 element.AddHandler(UIElement3D.MouseDownEvent, new RoutedEventHandler(selector3D.ContainerElementMouseDown), true);
                 element.MouseLeftButtonDown += selector3D.ContainerElementMouseDown;
                 //var parent =(Viewport3DVisual) VisualTreeHelper.GetParent(selector3D);
-               
                 selector3D.Children.Add(element);
             }
             Debug.WriteLine("Add points: {0} ms", stopwatch.ElapsedMilliseconds);
