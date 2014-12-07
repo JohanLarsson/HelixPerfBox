@@ -1,23 +1,22 @@
 ﻿namespace HelixPerfBox
 {
     using System;
+    using System.Collections;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Linq;
-    using System.Linq.Expressions;
     using System.Reflection;
     using System.Threading.Tasks;
     using System.Windows;
-    using System.Windows.Automation.Peers;
     using System.Windows.Controls;
-    using System.Windows.Data;
+    using System.Windows.Controls.Primitives;
     using System.Windows.Markup;
     using System.Windows.Media.Media3D;
-    using Gu.Reactive;
+    using System.Windows.Threading;
     using HelixToolkit.Wpf;
-
-    using MS.Internal;
 
     [ContentProperty("Children")]
     public class Selector3D : UIElement3D
@@ -26,14 +25,21 @@
             typeof(Selector3D),
             new FrameworkPropertyMetadata(
                 null,
-                FrameworkPropertyMetadataOptions.AffectsRender,
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure,
                 OnItemsSourceChanged));
 
+        public static readonly DependencyProperty SelectedItemProperty = Selector.SelectedItemProperty.AddOwner(
+            typeof(Selector3D),
+            new PropertyMetadata(null, OnSelectedItemChanged));
+
         private readonly Visual3DCollection _children;
+        private readonly ConcurrentQueue<ItemContainer3D> _containers = new ConcurrentQueue<ItemContainer3D>();
 
         public Selector3D()
         {
-            _children = (Visual3DCollection)Activator.CreateInstance(typeof(Visual3DCollection), BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.CreateInstance, null, null, new object[] { this });
+            var ctor = typeof(Visual3DCollection).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).Single();
+            _children = (Visual3DCollection)ctor.Invoke(new object[] { this });
+            //Task.Run(() => CreateGeometries(this.Dispatcher));
         }
 
         /// <summary>
@@ -46,23 +52,24 @@
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         public Visual3DCollection Children
         {
-            get
-            {
-                return _children;
-            }
+            get { return _children; }
         }
+
         public IEnumerable<object> ItemsSource
         {
             get { return (IEnumerable<object>)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
 
+        public object SelectedItem
+        {
+            get { return (object)this.GetValue(SelectedItemProperty); }
+            set { this.SetValue(SelectedItemProperty, value); }
+        }
+
         protected override int Visual3DChildrenCount
         {
-            get
-            {
-                return _children.Count;
-            }
+            get { return _children.Count; }
         }
 
         protected override Visual3D GetVisual3DChild(int index)
@@ -74,78 +81,98 @@
         {
             var selector3D = (Selector3D)o;
             selector3D.Children.Clear();
-            var balls = e.NewValue as IEnumerable<Ball>;
-            if (balls == null)
+            var old = e.OldValue as INotifyCollectionChanged;
+            if (old != null)
+            {
+                CollectionChangedEventManager.RemoveHandler(old, selector3D.Handler);
+            }
+            var items = e.NewValue as IEnumerable;
+            if (items == null)
             {
                 return;
             }
-            var stopwatch = Stopwatch.StartNew();
-            var meshes = await Task.Run(() => balls.Select(b => Tuple.Create(b, CreateMesh(b))).ToArray());
-            Debug.WriteLine("Create meshes: {0} ms", stopwatch.ElapsedMilliseconds);
-            stopwatch.Restart();
-            foreach (var tuple in meshes)
+            selector3D.Update(items);
+            var collectionChanged = items as INotifyCollectionChanged;
+            if (collectionChanged != null)
             {
-                var ball = tuple.Item1;
-                var geometry = tuple.Item2;
-                var material = new DiffuseMaterial(ball.Brush);
-                Bind(material, DiffuseMaterial.BrushProperty, ball, x => x.Brush);
-
-                var model = new GeometryModel3D { Geometry = geometry, Material = material };
-                var element = new ModelUIElement3D { Model = model };
-                element.AddHandler(UIElement3D.MouseDownEvent, new RoutedEventHandler(selector3D.ContainerElementMouseDown), true);
-                element.MouseLeftButtonDown += selector3D.ContainerElementMouseDown;
-                //var parent =(Viewport3DVisual) VisualTreeHelper.GetParent(selector3D);
-                selector3D.Children.Add(element);
+                CollectionChangedEventManager.AddHandler(collectionChanged, selector3D.Handler);
             }
-            Debug.WriteLine("Add points: {0} ms", stopwatch.ElapsedMilliseconds);
         }
 
-        private void ContainerElementMouseDown(object sender, RoutedEventArgs e)
+        private void Handler(object sender, NotifyCollectionChangedEventArgs e)
         {
-            var element = (ModelUIElement3D)sender;
-            var gm = (GeometryModel3D)element.Model;
-            gm.Material = Equals(gm.Material, Materials.Blue) ? Materials.Red : Materials.Blue;
-            e.Handled = true;
+            Update((IEnumerable)sender);
         }
 
-        //private void AddRange(IEnumerable<Ball> balls)
-        //{
-        //    foreach (var ball in balls)
-        //    {
-        //        var sphere = new SphereVisual3D
-        //        {
-        //            Material = new DiffuseMaterial(ball.Brush),
-        //            Center = ball.Point3D,
-        //            Radius = ball.Radius
-        //        };
-        //        Bind(sphere.Material, DiffuseMaterial.BrushProperty, ball, x => x.Brush);
-        //        Bind(sphere, SphereVisual3D.CenterProperty, ball, x => x.Point3D);
-        //        Bind(sphere, SphereVisual3D.RadiusProperty, ball, x => x.Radius);
-        //        Children.Add(sphere);
-        //    }
-        //}
-
-        private static void Bind<TSource>(DependencyObject target,
-                                          DependencyProperty property,
-                                          TSource source,
-                                          Expression<Func<TSource, object>> prop)
+        private void Update(IEnumerable items)
         {
-            var binding = new Binding(NameOf.Property(prop))
+            foreach (var child in Children)
             {
-                Source = source,
-                Mode = BindingMode.OneWay
-            };
-
-            BindingOperations.SetBinding(target, property, binding);
+                _containers.Enqueue((ItemContainer3D)child);
+            }
+            Children.Clear();
+            foreach (Ball item in items)
+            {
+                ItemContainer3D container;
+                if (_containers.TryDequeue(out container))
+                {
+                    Children.Add(container);
+                }
+                else
+                {
+                    var builder = new MeshBuilder();
+                    builder.AddSphere(new Point3D(0, 0, 0), 1);
+                    var model3D = new GeometryModel3D { Geometry = builder.ToMesh(), Material = Materials.Orange };
+                    var container3D = new ItemContainer3D(model3D);
+                    var transform3DGroup = new Transform3DGroup();
+                    transform3DGroup.Children.Add(new ScaleTransform3D(item.Radius, item.Radius, item.Radius));
+                    transform3DGroup.Children.Add( new TranslateTransform3D(item.Point3D.X, item.Point3D.Y, item.Point3D.Z));
+                    model3D.Transform = transform3DGroup;
+                    Children.Add(container3D);
+                }
+            }
         }
 
-        private static MeshGeometry3D CreateMesh(Ball ball)
+        private static void OnSelectedItemChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            var meshBuilder = new MeshBuilder(false, true);
-            meshBuilder.AddSphere(ball.Point3D, ball.Radius, 100, 50);
-            var geometry3D = meshBuilder.ToMesh(true);
-            geometry3D.Freeze();
-            return geometry3D;
+            //var selector3D = (Selector3D) o;
+            //UIElement3D element;
+            //if (e.OldValue != null)
+            //{
+            //    if (selector3D._map.TryGetValue(e.OldValue, out element))
+            //    {
+            //        //element
+            //    }
+            //}
+            //if (e.NewValue != null)
+            //{
+
+            //}
+        }
+
+        private void CreateGeometries(Dispatcher dispatcher)
+        {
+            var stopwatch = Stopwatch.StartNew();
+            var n = 100;
+            var model3Ds = new GeometryModel3D[n];
+            Parallel.For(0, n, i =>
+            {
+                var builder = new MeshBuilder();
+                builder.AddSphere(new Point3D(0, 0, 0), 1);
+                var model3D = new GeometryModel3D { Geometry = builder.ToMesh(), Material = Materials.Orange };
+                model3Ds[i] = model3D;
+            });
+            Debug.WriteLine("Created {0} geometries took: {1} ms", n, stopwatch.ElapsedMilliseconds);
+            stopwatch.Restart();
+            dispatcher.Invoke(() =>
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    var geometryModel3D = model3Ds[i];
+                    _containers.Enqueue(new ItemContainer3D(geometryModel3D.Clone()));
+                }
+            });
+            Debug.WriteLine("Created {0} containers took: {1} ms", n, stopwatch.ElapsedMilliseconds);
         }
     }
 }

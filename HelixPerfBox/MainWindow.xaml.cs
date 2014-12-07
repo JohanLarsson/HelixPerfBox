@@ -20,6 +20,9 @@
             InitializeComponent();
             var viewModel = new ViewModel();
             DataContext = viewModel;
+            MaterialBox.Items.Add(Materials.Black);
+            MaterialBox.Items.Add(Materials.Red);
+            MaterialBox.Items.Add(Materials.Blue);
         }
 
         //private void OnAdd100Click(object sender, RoutedEventArgs e)

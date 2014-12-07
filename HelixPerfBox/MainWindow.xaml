@@ -16,30 +16,40 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <!--
-                <Button x:Name="Button"
-                Click="OnAdd100Click"
-                Content="Add" />
-                <ToggleButton Click="OnVisibility" Content="Visible" />
-            -->
+
+            <ToggleButton IsChecked="{Binding IsBallsVisible}" Content="Visible" />
+
+            <ComboBox x:Name="MaterialBox" SelectedIndex="0">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type Material}">
+                        <Ellipse Width="20"
+                                 Height="20"
+                                 Fill="{Binding}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
             <Button Click="OnZoomExtentsClick" Content="ZoomExtents" />
         </StackPanel>
-
-        <h:HelixViewport3D x:Name="Viewport3D"
-                           Grid.Row="1"
-                           ZoomExtentsWhenLoaded="True">
-            <h:SunLight />
-            <ContainerUIElement3D>
-                <helixPerfBox:DemoElement3D/>
-                <helixPerfBox:DemoElement3D>
-                    <helixPerfBox:DemoElement3D.Transform>
-                        <TranslateTransform3D OffsetX="-5" OffsetY="0" OffsetZ="0"/>
-                    </helixPerfBox:DemoElement3D.Transform>
-                </helixPerfBox:DemoElement3D>
-            </ContainerUIElement3D>
-
-            <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" />
-            <helixPerfBox:Selector3D ItemsSource="{Binding BlueBalls}" />
-        </h:HelixViewport3D>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MinWidth="30"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ListBox ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type helixPerfBox:Ball}">
+                        <TextBlock Text="{Binding Point3D}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <h:HelixViewport3D x:Name="Viewport3D"
+                               Grid.Column="1"
+                               ZoomExtentsWhenLoaded="True">
+                <h:SunLight />
+                <!--  <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />  -->
+                <!--<helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />-->
+                <helixPerfBox:Balls3D ItemsSource="{Binding BlueBalls}" Material="{Binding SelectedItem, ElementName=MaterialBox}" />
+            </h:HelixViewport3D>
+        </Grid>
     </Grid>
 </Window>

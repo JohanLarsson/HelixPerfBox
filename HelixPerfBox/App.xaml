@@ -5,10 +5,7 @@
              xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <!--
-            <DataTemplate DataType="{x:Type helixPerfBox:Ball}">
-            <h:SphereVisual3D/>
-            </DataTemplate>
-        -->
+
+
     </Application.Resources>
 </Application>
