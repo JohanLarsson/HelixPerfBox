@@ -94,6 +94,7 @@
     <Compile Include="BindingHelper.cs" />
     <Compile Include="ItemContainer3D.cs" />
     <Compile Include="ItemsControl3D.cs" />
+    <Compile Include="ModelVisual3DFactory.cs" />
     <Compile Include="Properties\CanBeNullAttribute.cs" />
     <Compile Include="Properties\AspMvcActionAttribute.cs" />
     <Compile Include="Properties\AspMvcActionSelectorAttribute.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Properties\StringFormatMethodAttribute.cs" />
     <Compile Include="Properties\UsedImplicitlyAttribute.cs" />
     <Compile Include="Selector3D.cs" />
+    <Compile Include="TemplateModel.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

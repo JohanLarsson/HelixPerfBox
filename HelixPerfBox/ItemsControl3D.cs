@@ -1,52 +1,46 @@
 namespace HelixPerfBox
 {
-    using System;
+    using System.Collections;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.Specialized;
-    using System.Linq;
-    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Data;
     using System.Windows.Media.Media3D;
-    using HelixToolkit.Wpf;
 
-    public abstract class ItemsControl3D<T> : ModelVisual3D
+    public class ItemsControl3D : ModelVisual3D
     {
-        private readonly Action<MeshBuilder, T> _meshAction;
-
         public static readonly DependencyProperty ItemsSourceProperty = ItemsControl.ItemsSourceProperty.AddOwner(
-            typeof(ItemsControl3D<T>),
+            typeof(ItemsControl3D),
             new FrameworkPropertyMetadata(
                 null,
                 FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure,
                 OnItemsSourceChanged));
 
-        public static readonly DependencyProperty MaterialProperty = DependencyProperty.Register(
-            "Material",
-            typeof(Material),
-            typeof(ItemsControl3D<T>),
-            new PropertyMetadata(default(Material)));
+        public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(
+            "ItemTemplate",
+            typeof(TemplateModel),
+            typeof(ItemsControl3D),
+            new PropertyMetadata(default(TemplateModel)));
 
-        protected ItemsControl3D(Action<MeshBuilder, T> meshAction)
-        {
-            _meshAction = meshAction;
-        }
+        private readonly ConcurrentQueue<Visual3D> _cache = new ConcurrentQueue<Visual3D>();
 
-        public IEnumerable<object> ItemsSource
+        public IEnumerable ItemsSource
         {
-            get { return (IEnumerable<object>)GetValue(ItemsSourceProperty); }
+            get { return (IEnumerable)GetValue(ItemsSourceProperty); }
             set { SetValue(ItemsSourceProperty, value); }
         }
 
-        public Material Material
+        public TemplateModel ItemTemplate
         {
-            get { return (Material)GetValue(MaterialProperty); }
-            set { SetValue(MaterialProperty, value); }
+            get { return (TemplateModel)GetValue(ItemTemplateProperty); }
+            set { SetValue(ItemTemplateProperty, value); }
         }
 
-        private static async void OnItemsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        private static void OnItemsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            var itemsControl3D = (ItemsControl3D<T>)o;
+            var itemsControl3D = (ItemsControl3D)o;
             itemsControl3D.Children.Clear();
             var old = e.OldValue as INotifyCollectionChanged;
             if (old != null)
@@ -59,8 +53,8 @@ namespace HelixPerfBox
             {
                 CollectionChangedEventManager.AddHandler(collectionChanged, itemsControl3D.Handler);
             }
-            var items = e.NewValue as IEnumerable<T>;
-            if (items == null || !items.Any())
+            var items = e.NewValue as IEnumerable;
+            if (items == null)
             {
                 return;
             }
@@ -69,27 +63,27 @@ namespace HelixPerfBox
 
         private void Handler(object sender, NotifyCollectionChangedEventArgs e)
         {
-            Update((IEnumerable<T>)sender);
+            Update((IEnumerable)sender);
         }
 
-        protected async void Update(IEnumerable<T> items)
+        protected void Update(IEnumerable items)
         {
+            foreach (var child in Children)
+            {
+                //BindingOperations.ClearAllBindings(child);
+                _cache.Enqueue(child);
+            }
             Children.Clear();
-            var mesh = await Task.Run(() => CreateMesh(items, _meshAction, true));
-            var model = new GeometryModel3D { Geometry = mesh, Material = Material };
-            model.Bind(GeometryModel3D.MaterialProperty, this, MaterialProperty);
-            Children.Add(new ModelVisual3D { Content = model });
-        }
-
-        private static MeshGeometry3D CreateMesh(IEnumerable<T> items, Action<MeshBuilder, T> meshAction, bool freeze = true)
-        {
-            var builder = new MeshBuilder();
             foreach (var item in items)
             {
-                meshAction(builder, item);
+                Visual3D visual3D;
+                if (!_cache.TryDequeue(out visual3D))
+                {
+                    visual3D = ItemTemplate.Create();
+                }
+                ItemTemplate.SetBindings(visual3D, item);
+                Children.Add(visual3D);
             }
-            var mesh = builder.ToMesh(freeze);
-            return mesh;
         }
     }
 }

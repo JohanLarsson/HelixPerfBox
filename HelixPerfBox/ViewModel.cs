@@ -18,9 +18,9 @@
         {
             var redBalls = new List<Ball>();
             var blueBalls = new List<Ball>();
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < 20; x++)
             {
-                for (int y = 0; y < 5; y++)
+                for (int y = 0; y < 20; y++)
                 {
                     redBalls.Add(new Ball(new Point3D(x, y, 0), 0.3));
                     blueBalls.Add(new Ball(new Point3D(x, y, 5), 0.3));

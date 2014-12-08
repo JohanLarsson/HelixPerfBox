@@ -53,10 +53,23 @@
             <h:HelixViewport3D x:Name="Viewport3D"
                                Grid.Column="1"
                                ZoomExtentsWhenLoaded="True">
+                <h:HelixViewport3D.Resources>
+                    <!--
+                        <DataTemplate x:Key="BallTemplate" DataType="{x:Type helixPerfBox:Ball}">
+                        <FrameworkContentElement>
+                        <h:SphereVisual3D Center="{Binding Point3D}" Radius="{Binding Radius}" />
+                        </FrameworkContentElement>
+                        </DataTemplate>
+                    -->
+                    <helixPerfBox:TemplateModel x:Key="BallTemplate" DataType="{x:Type helixPerfBox:Ball}">
+                        <h:SphereVisual3D Center="{Binding Point3D}" Radius="{Binding Radius}" />
+                    </helixPerfBox:TemplateModel>
+                </h:HelixViewport3D.Resources>
                 <h:SunLight />
                 <!--  <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />  -->
                 <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />
-                <helixPerfBox:Balls3D ItemsSource="{Binding BlueBalls}" Material="{Binding SelectedItem, ElementName=MaterialBox}" />
+
+                <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource BallTemplate}" ItemsSource="{Binding BlueBalls}" />
             </h:HelixViewport3D>
         </Grid>
     </Grid>
