@@ -13,7 +13,7 @@
     public class ViewModel : INotifyPropertyChanged
     {
         private Ball _selectedRed;
-        private bool _isBallsVisible = false;
+        private bool _isBallsVisible = true;
         public ViewModel()
         {
             var redBalls = new List<Ball>();

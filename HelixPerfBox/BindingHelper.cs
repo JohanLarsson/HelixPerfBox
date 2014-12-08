@@ -35,5 +35,16 @@
 
             BindingOperations.SetBinding(target, targetProperty, binding);
         }
+
+        public static void Bind(this DependencyObject target, DependencyProperty targetProperty, object source)
+        {
+            var binding = new Binding()
+            {
+                Source = source,
+                Mode = BindingMode.OneWay
+            };
+
+            BindingOperations.SetBinding(target, targetProperty, binding);
+        }
     }
 }

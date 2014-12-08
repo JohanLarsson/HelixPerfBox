@@ -4,8 +4,5 @@
              xmlns:h="http://helix-toolkit.org/wpf"
              xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
              StartupUri="MainWindow.xaml">
-    <Application.Resources>
-
-
-    </Application.Resources>
+    <Application.Resources />
 </Application>

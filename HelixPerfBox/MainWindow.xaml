@@ -17,7 +17,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
 
-            <ToggleButton IsChecked="{Binding IsBallsVisible}" Content="Visible" />
+            <ToggleButton Content="Visible" IsChecked="{Binding IsBallsVisible}" />
 
             <ComboBox x:Name="MaterialBox" SelectedIndex="0">
                 <ComboBox.ItemTemplate>
@@ -32,22 +32,30 @@
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" MinWidth="30"/>
+                <ColumnDefinition Width="Auto" MinWidth="30" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <ListBox ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}">
-                <ListBox.ItemTemplate>
+            <DataGrid ItemsSource="{Binding RedBalls}"
+                      SelectedItem="{Binding SelectedRed}"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Point3D}" Header="Point" />
+                </DataGrid.Columns>
+                <!--
+                    <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type helixPerfBox:Ball}">
-                        <TextBlock Text="{Binding Point3D}" />
+                    <TextBlock Text="{Binding Point3D}" />
                     </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                    </ListBox.ItemTemplate>
+                -->
+            </DataGrid>
             <h:HelixViewport3D x:Name="Viewport3D"
                                Grid.Column="1"
                                ZoomExtentsWhenLoaded="True">
                 <h:SunLight />
                 <!--  <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />  -->
-                <!--<helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />-->
+                <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />
                 <helixPerfBox:Balls3D ItemsSource="{Binding BlueBalls}" Material="{Binding SelectedItem, ElementName=MaterialBox}" />
             </h:HelixViewport3D>
         </Grid>
