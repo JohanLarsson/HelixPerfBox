@@ -17,18 +17,23 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
 
-            <ToggleButton Click="OnMoveCenter" Content="MoveCenter" />
             <ToggleButton Content="Visible" IsChecked="{Binding IsBallsVisible}" />
 
-            <ComboBox x:Name="MaterialBox" SelectedIndex="0">
-                <ComboBox.ItemTemplate>
+            <ListBox x:Name="MaterialBox" SelectedIndex="0">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemTemplate>
                     <DataTemplate DataType="{x:Type Material}">
                         <Ellipse Width="20"
                                  Height="20"
                                  Fill="{Binding}" />
                     </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
             <Button Click="OnZoomExtentsClick" Content="ZoomExtents" />
         </StackPanel>
         <Grid Grid.Row="1">
@@ -37,7 +42,8 @@
                 <ColumnDefinition Width="Auto" MinWidth="30" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <DataGrid ItemsSource="{Binding RedBalls}"
+            <DataGrid AutoGenerateColumns="False"
+                      ItemsSource="{Binding RedBalls}"
                       SelectedItem="{Binding SelectedRed}"
                       SelectionMode="Single"
                       SelectionUnit="FullRow">
@@ -48,6 +54,7 @@
             </DataGrid>
 
             <DataGrid Grid.Column="1"
+                      AutoGenerateColumns="False"
                       ItemsSource="{Binding BlueBalls}"
                       SelectionMode="Single"
                       SelectionUnit="FullRow">
@@ -61,7 +68,9 @@
                                Grid.Column="2"
                                ZoomExtentsWhenLoaded="True">
                 <h:HelixViewport3D.Resources>
-                    <helixPerfBox:TemplateModel x:Key="BallTemplate" DataType="{x:Type helixPerfBox:Ball}">
+                    <helixPerfBox:TemplateModel x:Key="BallTemplate"
+                                                DataType="{x:Type helixPerfBox:Ball}"
+                                                d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
                         <h:SphereVisual3D Center="{Binding Point3D}"
                                           Fill="BlueViolet"
                                           Radius="{Binding Radius}">
@@ -71,14 +80,40 @@
                         </h:SphereVisual3D>
                     </helixPerfBox:TemplateModel>
 
-                    <helixPerfBox:TemplateModel x:Key="OptimizedBallTemplate" DataType="{x:Type helixPerfBox:Ball}">
-                        <h:SphereVisual3D Fill="BlueViolet" Radius="0.3">
+                    <helixPerfBox:TemplateModel x:Key="ElementNameTemplate"
+                                                DataType="{x:Type helixPerfBox:Ball}"
+                                                d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
+                        <h:SphereVisual3D Center="{Binding Point3D}"
+                                          Fill="{Binding SelectedItem,
+                                                         ElementName=MaterialBox}"
+                                          Radius="{Binding Radius}">
                             <h:SphereVisual3D.Transform>
-                                <TranslateTransform3D OffsetX="{Binding Point3D.X}"
-                                                      OffsetY="{Binding Point3D.Y}"
-                                                      OffsetZ="{Binding Point3D.Z}" />
+                                <TranslateTransform3D OffsetX="{Binding Point3D.X}" />
                             </h:SphereVisual3D.Transform>
                         </h:SphereVisual3D>
+                    </helixPerfBox:TemplateModel>
+
+                    <helixPerfBox:TemplateModel x:Key="ConverterTemplate"
+                                                DataType="{x:Type helixPerfBox:Ball}"
+                                                d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
+                        <h:SphereVisual3D Fill="BlueViolet"
+                                          Radius="0.3"
+                                          Transform="{Binding Point3D,
+                                                              Converter={StaticResource PointToTransformConverter}}" />
+                    </helixPerfBox:TemplateModel>
+
+                    <helixPerfBox:TemplateModel x:Key="MultiBindingTemplate"
+                                                DataType="{x:Type helixPerfBox:Ball}"
+                                                d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
+                        <h:SphereVisual3D Fill="{Binding SelectedItem, ElementName=MaterialBox}">
+                            <h:SphereVisual3D.Transform>
+                                <MultiBinding Converter="{StaticResource PointAndRadiusToTransformConverter}">
+                                    <Binding Path="Point3D" />
+                                    <Binding Path="Radius" />
+                                </MultiBinding>
+                            </h:SphereVisual3D.Transform>
+                        </h:SphereVisual3D>
+
                     </helixPerfBox:TemplateModel>
                 </h:HelixViewport3D.Resources>
                 <h:SunLight />
@@ -87,7 +122,13 @@
 
                 <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />
 
-                <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource BallTemplate}" ItemsSource="{Binding BlueBalls}" />
+                <!--  <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource BallTemplate}" ItemsSource="{Binding BlueBalls}" />  -->
+
+                <!--  <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource ElementNameTemplate}" ItemsSource="{Binding BlueBalls}" />  -->
+
+                <!--  <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource ConverterTemplate}" ItemsSource="{Binding BlueBalls}" />  -->
+
+                <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource MultiBindingTemplate}" ItemsSource="{Binding BlueBalls}" />
 
                 <!--  <h:SphereVisual3D x:Name="SphereVisual3D" Fill="HotPink" Radius="2"/>  -->
             </h:HelixViewport3D>

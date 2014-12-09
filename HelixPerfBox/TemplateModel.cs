@@ -162,18 +162,20 @@
             }
             foreach (var expression in _bindingExpressions)
             {
-                var binding = expression.ParentBindingBase as Binding;
-                if (binding == null)
-                {
-                    throw new NotImplementedException(string.Format("Not handling bindings of type {0}", expression.ParentBindingBase.GetType().Name));
-                }
-                if (_dataTypeProperties == null || binding.RelativeSource != null || binding.ElementName != null)
+                var binding = expression.ParentBindingBase;
+
+                if (_dataTypeProperties == null || binding.HasValue(BindingHelper.RelativeSource) || binding.HasValue(BindingHelper.ElementName))
                 {
                     continue;
                 }
-                if (_dataTypeProperties.All(x => x.Name != binding.Path.Path))
+                var propertyPath = (PropertyPath)   binding.GetValueOrDefault(BindingHelper.Path);
+                if (propertyPath == null)
                 {
-                    throw new ArgumentException(string.Format("Trying to bind to {0}.{1}", _dataType.Name, binding.Path.Path));
+                    continue;
+                }
+                if (_dataTypeProperties.All(x => x.Name != propertyPath.Path))
+                {
+                    throw new ArgumentException(string.Format("Trying to bind to {0}.{1}", _dataType.Name, propertyPath.Path));
                 }
             }
         }

@@ -1,47 +1,59 @@
 ﻿namespace HelixPerfBox
 {
-    using System.Collections.Generic;
+    using System;
+    using System.Collections.ObjectModel;
     using System.ComponentModel;
-    using System.Linq;
     using System.Runtime.CompilerServices;
-    using System.Windows.Media;
     using System.Windows.Media.Media3D;
     using Annotations;
     using Gu.Reactive;
-    using Gu.Wpf.Reactive;
+    using System.Reactive;
 
     public class ViewModel : INotifyPropertyChanged
     {
+        private readonly ObservableCollection<Ball> _redBalls = new ObservableCollection<Ball>();
+        private readonly ObservableCollection<Ball> _blueBalls = new ObservableCollection<Ball>();
+
         private Ball _selectedRed;
         private bool _isBallsVisible = true;
-        private bool _moveCenter;
+
+
         public ViewModel()
         {
-            var redBalls = new List<Ball>();
-            var blueBalls = new List<Ball>();
-            for (int x = 0; x < 10; x++)
+            this.ToObservable(x => x.IsBallsVisible)
+                .Subscribe(
+                    x =>
+                        {
+                            if (IsBallsVisible)
+                            {
+                                CreateBalls(10);
+                            }
+                            else
+                            {
+                                _blueBalls.Clear();
+                                _redBalls.Clear();
+                            }
+                        });
+        }
+
+        private void CreateBalls(int side)
+        {
+            for (int x = 0; x < side; x++)
             {
-                for (int y = 0; y < 10; y++)
+                for (int y = 0; y < side; y++)
                 {
-                    redBalls.Add(new Ball(new Point3D(x, y, 0), 0.3));
-                    blueBalls.Add(new Ball(new Point3D(x, y, 5), 0.3));
+                    _redBalls.Add(new Ball(new Point3D(x, y, 0), 0.3));
+                    _blueBalls.Add(new Ball(new Point3D(x, y, 5), 0.3));
                 }
             }
-
-            RedBalls = new CollectionView<Ball>(redBalls, this.ToObservable(x => x.IsBallsVisible))
-            {
-                Filter = _ => IsBallsVisible
-            };
-
-            BlueBalls = new CollectionView<Ball>(blueBalls, this.ToObservable(x => x.IsBallsVisible))
-            {
-                Filter = _ => IsBallsVisible
-            };
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public CollectionView<Ball> RedBalls { get; private set; }
+        public ObservableCollection<Ball> RedBalls
+        {
+            get { return _redBalls; }
+        }
 
         public Ball SelectedRed
         {
@@ -57,7 +69,10 @@
             }
         }
 
-        public CollectionView<Ball> BlueBalls { get; private set; }
+        public ObservableCollection<Ball> BlueBalls
+        {
+            get { return _blueBalls; }
+        }
 
         public bool IsBallsVisible
         {

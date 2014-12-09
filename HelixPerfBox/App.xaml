@@ -4,5 +4,9 @@
              xmlns:h="http://helix-toolkit.org/wpf"
              xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
              StartupUri="MainWindow.xaml">
-    <Application.Resources />
+    <Application.Resources>
+        <helixPerfBox:PointToTransformConverter x:Key="PointToTransformConverter" />
+        <helixPerfBox:RadiusToTransformConverter x:Key="RadiusoTransformConverter" />
+        <helixPerfBox:PointAndRadiusToTransformConverter x:Key="PointAndRadiusToTransformConverter" />
+    </Application.Resources>
 </Application>
