@@ -7,20 +7,43 @@
     using System.ComponentModel;
     using System.Globalization;
     using System.Linq;
+    using System.Windows;
     using System.Windows.Data;
 
-    public class ItemCollection3D : ICollectionView, IList, ICollection
+    public class ItemCollection3D : ICollectionView //, IList, ICollection
     {
         private readonly WeakReference _parent;
         private readonly ObservableCollection<object> _items = new ObservableCollection<object>();
-        private IEnumerable _itemsSource;
-        private readonly ListCollectionView _collectionView;
+        private ICollectionView _collectionView;
+        private readonly CollectionViewSource _collectionViewSource = new CollectionViewSource();
         private bool _isUsingItemsSource;
 
+        private readonly DependencyPropertyDescriptor _itemsSourceChangedDescriptor = DependencyPropertyDescriptor.FromProperty(ItemsControl3D.ItemsSourceProperty, typeof(ItemsControl3D));
         internal ItemCollection3D(ItemsControl3D parent)
         {
             _parent = new WeakReference(parent);
-            _collectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);
+            this.SetItemsSource(parent.ItemsSource ?? _items);
+        }
+
+        public void ClearItemsSource()
+        {
+            this.SetItemsSource(Enumerable.Empty<object>());
+        }
+       
+        public void SetItemsSource(IEnumerable newValue)
+        {
+            _isUsingItemsSource = true;
+
+            CollectionChangedEventManager.RemoveHandler(_collectionView, OnCollectionChanged);
+            CurrentChangingEventManager.RemoveHandler(_collectionView, OnCurrentChanging);
+            CurrentChangedEventManager.RemoveHandler(_collectionView, OnCurrentChanged);
+            
+            _collectionViewSource.Source = newValue;
+            _collectionView = _collectionViewSource.View;
+            CollectionChangedEventManager.AddHandler(_collectionView, OnCollectionChanged);
+            CurrentChangingEventManager.AddHandler(_collectionView, OnCurrentChanging);
+            CurrentChangedEventManager.AddHandler(_collectionView, OnCurrentChanged);
+            _collectionView.Refresh();
         }
 
         internal ItemsControl3D Parent
@@ -28,14 +51,6 @@
             get
             {
                 return (ItemsControl3D)this._parent.Target;
-            }
-        }
-
-        internal IEnumerable ItemsSource
-        {
-            get
-            {
-                return _itemsSource;
             }
         }
 
@@ -47,165 +62,168 @@
             }
         }
 
-        #region ICollection & ILIst
+        //#region ICollection & ILIst
 
-        bool ICollection.IsSynchronized
-        {
-            get
-            {
-                return false;
-            }
-        }
+        //bool ICollection.IsSynchronized
+        //{
+        //    get { return false; }
+        //}
 
-        object ICollection.SyncRoot
-        {
-            get
-            {
-                if (this.IsUsingItemsSource)
-                    throw new NotSupportedException("ItemCollectionShouldUseInnerSyncRoot");
-                else
-                    return ((ICollection)_items).SyncRoot;
-            }
-        }
+        //object ICollection.SyncRoot
+        //{
+        //    get
+        //    {
+        //        if (this.IsUsingItemsSource)
+        //            throw new NotSupportedException("ItemCollectionShouldUseInnerSyncRoot");
+        //        else
+        //            return ((ICollection)_items).SyncRoot;
+        //    }
+        //}
 
-        bool IList.IsFixedSize
-        {
-            get
-            {
-                return this.IsUsingItemsSource;
-            }
-        }
+        //bool IList.IsFixedSize
+        //{
+        //    get { return this.IsUsingItemsSource; }
+        //}
 
-        bool IList.IsReadOnly
-        {
-            get
-            {
-                return this.IsUsingItemsSource;
-            }
-        }
+        //bool IList.IsReadOnly
+        //{
+        //    get { return this.IsUsingItemsSource; }
+        //}
 
-        public int Add(object newItem)
-        {
-            _items.Add(newItem);
-            Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
-            return _collectionView.IndexOf(newItem);
-        }
+        //public int Add(object newItem)
+        //{
+        //    _items.Add(newItem);
+        //    Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
+        //    return _collectionView.IndexOf(newItem);
+        //}
 
-        public void Clear()
-        {
-            _items.Clear();
-            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-        }
+        //public void Clear()
+        //{
+        //    _items.Clear();
+        //    this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        //}
 
-        public void CopyTo(Array array, int index)
-        {
-            if (array == null)
-                throw new ArgumentNullException("array");
-            if (array.Rank > 1)
-                throw new ArgumentException("array.Rank > 1");
-            if (index < 0)
-                throw new ArgumentOutOfRangeException("index");
-            _collectionView.Cast<object>().ToArray().CopyTo(array, index);
-        }
+        //public void CopyTo(Array array, int index)
+        //{
+        //    if (array == null)
+        //        throw new ArgumentNullException("array");
+        //    if (array.Rank > 1)
+        //        throw new ArgumentException("array.Rank > 1");
+        //    if (index < 0)
+        //        throw new ArgumentOutOfRangeException("index");
+        //    _collectionView.Cast<object>().ToArray().CopyTo(array, index);
+        //}
 
-        public int Count { get { return _collectionView.Count; } }
+        //public int Count { get { return _collectionView.Count(); } }
 
-        public int IndexOf(object item)
-        {
-            return _collectionView.IndexOf(item);
-        }
+        //public int IndexOf(object item)
+        //{
+        //    return _collectionView.IndexOf(item);
+        //}
 
-        public object GetItemAt(int index)
-        {
-            if (index < 0)
-                throw new ArgumentOutOfRangeException("index");
-            if (index >= this._collectionView.Count)
-                throw new ArgumentOutOfRangeException("index");
-            else
-                return this._collectionView.GetItemAt(index);
-        }
+        //public object GetItemAt(int index)
+        //{
+        //    if (index < 0)
+        //        throw new ArgumentOutOfRangeException("index");
+        //    if (index >= this._collectionView.Count)
+        //        throw new ArgumentOutOfRangeException("index");
+        //    else
+        //        return this._collectionView.GetItemAt(index);
+        //}
 
-        public void Insert(int insertIndex, object insertItem)
-        {
-            if (insertIndex == 0)
-            {
-                _items.Insert(insertIndex, insertItem);
-            }
-            else
-            {
-                var indexOf = _items.IndexOf(_collectionView.GetItemAt(insertIndex));
-                _items.Insert(indexOf, insertItem);
-            }
-            this.Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
-        }
+        //public void Insert(int insertIndex, object insertItem)
+        //{
+        //    if (insertIndex == 0)
+        //    {
+        //        _items.Insert(insertIndex, insertItem);
+        //    }
+        //    else
+        //    {
+        //        var indexOf = _items.IndexOf(_collectionView.GetItemAt(insertIndex));
+        //        _items.Insert(indexOf, insertItem);
+        //    }
+        //    this.Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
+        //}
 
-        public void Remove(object removeItem)
-        {
-            _items.Remove(removeItem);
-            if (!this.IsEmpty)
-                return;
-            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-        }
+        //public void Remove(object removeItem)
+        //{
+        //    _items.Remove(removeItem);
+        //    if (!this.IsEmpty)
+        //        return;
+        //    this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        //}
 
-        public void RemoveAt(int removeIndex)
-        {
-            _collectionView.RemoveAt(removeIndex);
-            if (!this.IsEmpty)
-                return;
-            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-        }
+        //public void RemoveAt(int removeIndex)
+        //{
+        //    _collectionView.RemoveAt(removeIndex);
+        //    if (!this.IsEmpty)
+        //        return;
+        //    this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        //}
 
-        public object this[int index]
-        {
-            get
-            {
-                return _collectionView.GetItemAt(index);
-            }
-            set
-            {
-                var itemAt = _collectionView.GetItemAt(index);
-                var indexOf = _items.IndexOf(itemAt);
-                _items[indexOf] = value; // Not efficient nor nice here
-            }
-        }
+        //public object this[int index]
+        //{
+        //    get
+        //    {
+        //        return _collectionView.GetItemAt(index);
+        //    }
+        //    set
+        //    {
+        //        var itemAt = _collectionView.GetItemAt(index);
+        //        var indexOf = _items.IndexOf(itemAt);
+        //        _items[indexOf] = value; // Not efficient nor nice here
+        //    }
+        //}
 
-        #endregion ICollection & ILIst
+        //#endregion ICollection & ILIst
 
         #region ICollectionView
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+        public event CurrentChangingEventHandler CurrentChanging;
+
+        public event EventHandler CurrentChanged;
+
+        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            add
+            this.OnCollectionChanged(notifyCollectionChangedEventArgs);
+        }
+
+        protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            var handler = this.CollectionChanged;
+            if (handler != null)
             {
-                ((INotifyCollectionChanged)_collectionView).CollectionChanged += value;
-            }
-            remove
-            {
-                ((INotifyCollectionChanged)_collectionView).CollectionChanged -= value;
+                handler(this, e);
             }
         }
 
-        public event CurrentChangingEventHandler CurrentChanging
+        private void OnCurrentChanging(object sender, CurrentChangingEventArgs currentChangingEventArgs)
         {
-            add
+            this.OnCurrentChanging(currentChangingEventArgs);
+        }
+
+        protected virtual void OnCurrentChanging(CurrentChangingEventArgs e)
+        {
+            var handler = this.CurrentChanging;
+            if (handler != null)
             {
-                _collectionView.CurrentChanging += value;
-            }
-            remove
-            {
-                _collectionView.CurrentChanging -= value;
+                handler(this, e);
             }
         }
 
-        public event EventHandler CurrentChanged
+        private void OnCurrentChanged(object sender, EventArgs eventArgs)
         {
-            add
+            this.OnCurrentChanged();
+        }
+
+        protected virtual void OnCurrentChanged()
+        {
+            var handler = this.CurrentChanged;
+            if (handler != null)
             {
-                _collectionView.CurrentChanged += value;
-            }
-            remove
-            {
-                _collectionView.CurrentChanged -= value;
+                handler(this, EventArgs.Empty);
             }
         }
 

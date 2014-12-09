@@ -2,18 +2,12 @@ namespace HelixPerfBox
 {
     using System;
     using System.Collections;
-    using System.Collections.ObjectModel;
     using System.Collections.Specialized;
-    using System.ComponentModel;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
     using System.Windows.Data;
     using System.Windows.Media.Media3D;
-
-    using HelixPerfBox.Reflection;
-
-    using MS.Internal.Controls;
 
     public class ItemsControl3D : ModelVisual3D
     {
@@ -84,13 +78,10 @@ namespace HelixPerfBox
             var itemsControl3D = (ItemsControl3D)o;
             var oldValue = (IEnumerable)e.OldValue;
             var newValue = (IEnumerable)e.NewValue;
-            var beb = BindingOperations.GetBindingExpressionBase(o, ItemsControl.ItemsSourceProperty);
-            if (beb != null)
-                itemsControl3D.Items.SetItemsSourceWithReflection(newValue, (Func<object, object>)(x => beb.GetSourceItemWithReflection(x)));
-            else if (e.NewValue != null)
-                itemsControl3D.Items.SetItemsSourceWithReflection(newValue, (Func<object, object>)null);
+            if (e.NewValue != null)
+                itemsControl3D.Items.SetItemsSource(newValue);
             else
-                itemsControl3D.Items.ClearItemsSourceWithReflection();
+                itemsControl3D.Items.ClearItemsSource();
             itemsControl3D.OnItemsSourceChanged(oldValue, newValue);
         }
 
@@ -102,8 +93,6 @@ namespace HelixPerfBox
         protected virtual void OnItemCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             this.SetValue(ItemsControl3D.HasItemsPropertyKey, this._items != null && !this._items.IsEmpty);
-            if (e.Action == NotifyCollectionChangedAction.Reset)
-                ((IContainItemStorage)this).Clear();
             this.OnItemsChanged(e);
         }
 

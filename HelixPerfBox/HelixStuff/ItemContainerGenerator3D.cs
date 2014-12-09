@@ -4,6 +4,7 @@
     using System.Collections;
     using System.Collections.Concurrent;
     using System.Collections.Specialized;
+    using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Windows;
     using System.Windows.Media.Media3D;
@@ -39,6 +40,11 @@
 
         public void Refresh()
         {
+            this.Reset(_itemsControl3D.Items);
+        }
+
+        public void Reset(IEnumerable newItems)
+        {
             RemoveAll();
             Add(_itemsControl3D.Items);
         }
@@ -69,31 +75,50 @@
 
         public void RemoveAll()
         {
-            Remove(_itemsControl3D.Children);
+            var start = this._itemsControl3D.Children.Count - 1;
+            for (int i = start; i >= 0; i--)
+            {
+                var child = this._itemsControl3D.Children[i];
+                this.Remove(child);
+            }
         }
 
         public void Remove(IEnumerable oldItems)
         {
+            if (oldItems == null)
+            {
+                return;
+            }
             foreach (var remove in oldItems)
             {
                 Visual3D container;
                 if (!_map.TryGetValue(remove, out container))
                 {
-                    throw new InvalidOperationException("Could not find container for item"); 
+                    throw new InvalidOperationException("Could not find container for item");
                 }
-                _itemsControl3D.Children.Remove(container);
-                UnlinkContainerFromItem(container, _itemsControl3D);
-                Recycle(container);
+                Remove(container);
             }
+        }
+
+        private void Remove(Visual3D container)
+        {
+            _itemsControl3D.Children.Remove(container);
+            UnlinkContainerFromItem(container, _itemsControl3D);
+            Recycle(container);
         }
 
         public void Add(IEnumerable newItems)
         {
+            if (newItems == null)
+            {
+                return;
+            }
             foreach (var newItem in newItems)
             {
                 var container = GenerateNext();
                 LinkContainerForItem(container, newItem, _itemsControl3D);
                 _itemsControl3D.Children.Add(container);
+                System.Windows.Threading.Dispatcher.Yield();
             }
         }
 
@@ -135,13 +160,13 @@
                     Remove(e.OldItems);
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    Remove(e.OldItems);
-                    Add(e.NewItems);
+                    this.Remove(e.OldItems);
+                    this.Add(e.NewItems);
                     break;
                 case NotifyCollectionChangedAction.Move:
                     return;
                 case NotifyCollectionChangedAction.Reset:
-                    Refresh();
+                    this.Reset(_itemsControl3D.Items);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

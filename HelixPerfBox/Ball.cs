@@ -54,6 +54,11 @@ namespace HelixPerfBox
             }
         }
 
+        public override string ToString()
+        {
+            return string.Format("Point3D: {0}, Radius: {1}", this.Point3D, this.Radius);
+        }
+
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
