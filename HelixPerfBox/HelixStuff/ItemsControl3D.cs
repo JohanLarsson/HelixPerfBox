@@ -2,7 +2,9 @@ namespace HelixPerfBox
 {
     using System;
     using System.Collections;
+    using System.Collections.ObjectModel;
     using System.Collections.Specialized;
+    using System.ComponentModel;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
@@ -13,7 +15,7 @@ namespace HelixPerfBox
 
     using MS.Internal.Controls;
 
-    public class ItemsControl3D : ModelVisual3D, IContainItemStorage
+    public class ItemsControl3D : ModelVisual3D
     {
         public static readonly DependencyProperty ItemsSourceProperty = ItemsControl.ItemsSourceProperty.AddOwner(
             typeof(ItemsControl3D),
@@ -36,7 +38,7 @@ namespace HelixPerfBox
             typeof(ItemsControl3D),
             new PropertyMetadata(default(TemplateModel), OnItemTemplateChanged));
 
-        private ItemCollection _items;
+        private ItemCollection3D _items;
         private ItemContainerGenerator3D _itemContainerGenerator;
 
         public IEnumerable ItemsSource
@@ -57,15 +59,15 @@ namespace HelixPerfBox
             }
         }
 
-        public ItemCollection Items
+        public ItemCollection3D Items
         {
             get
             {
                 if (_items == null)
                 {
-                    _items = ItemCollectionExt.Create(this);
+                    _items = new ItemCollection3D(this);
                     _itemContainerGenerator = new ItemContainerGenerator3D(this);
-                    ((INotifyCollectionChanged)_items).CollectionChanged += this.OnItemCollectionChanged;
+                    (_items).CollectionChanged += this.OnItemCollectionChanged;
                 }
                 return _items;
             }
@@ -119,35 +121,5 @@ namespace HelixPerfBox
                 return;
             _itemContainerGenerator.Refresh();
         }
-
-        #region ItemValueStorage
-
-        object IContainItemStorage.ReadItemValue(object item, DependencyProperty dp)
-        {
-            return Helper.ReadItemValue(this, item, dp.GlobalIndex);
-        }
-
-
-        void IContainItemStorage.StoreItemValue(object item, DependencyProperty dp, object value)
-        {
-            Helper.StoreItemValue(this, item, dp.GlobalIndex, value);
-        }
-
-        void IContainItemStorage.ClearItemValue(object item, DependencyProperty dp)
-        {
-            Helper.ClearItemValue(this, item, dp.GlobalIndex);
-        }
-
-        void IContainItemStorage.ClearValue(DependencyProperty dp)
-        {
-            Helper.ClearItemValueStorage(this, new int[] { dp.GlobalIndex });
-        }
-
-        void IContainItemStorage.Clear()
-        {
-            Helper.ClearItemValueStorage(this);
-        }
-
-        #endregion
     }
 }

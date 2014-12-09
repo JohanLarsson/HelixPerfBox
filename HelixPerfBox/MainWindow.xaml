@@ -17,10 +17,18 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
 
-            <ToggleButton Content="Clear" IsChecked="{Binding Is0}" Width="40"/>
-            <ToggleButton Content="25" IsChecked="{Binding Is25}" Width="40"/>
-            <ToggleButton Content="100" IsChecked="{Binding Is100}" Width="40"/>
-            <ToggleButton Content="400" IsChecked="{Binding Is400}" Width="40"/>
+            <ToggleButton Width="40"
+                          Content="Clear"
+                          IsChecked="{Binding Is0}" />
+            <ToggleButton Width="40"
+                          Content="25"
+                          IsChecked="{Binding Is25}" />
+            <ToggleButton Width="40"
+                          Content="100"
+                          IsChecked="{Binding Is100}" />
+            <ToggleButton Width="40"
+                          Content="400"
+                          IsChecked="{Binding Is400}" />
 
             <ListBox x:Name="FillBox" SelectedIndex="0">
                 <ListBox.ItemsPanel>
@@ -37,7 +45,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <!--<Button Click="OnZoomExtentsClick" Content="ZoomExtents" />-->
+            <!--  <Button Click="OnZoomExtentsClick" Content="ZoomExtents" />  -->
         </StackPanel>
 
         <Grid Grid.Row="1">

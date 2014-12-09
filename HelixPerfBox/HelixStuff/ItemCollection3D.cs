@@ -1,285 +1,300 @@
-﻿//namespace HelixPerfBox
-//{
-//    using System;
-//    using System.Collections;
-//    using System.Collections.ObjectModel;
-//    using System.Collections.Specialized;
-//    using System.ComponentModel;
-//    using System.Globalization;
-//    using System.Linq;
-//    using System.Windows;
-//    using System.Windows.Data;
+﻿namespace HelixPerfBox
+{
+    using System;
+    using System.Collections;
+    using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
+    using System.ComponentModel;
+    using System.Globalization;
+    using System.Linq;
+    using System.Windows.Data;
 
-//    public class ItemCollection3D : ICollectionView, IList, ICollection
-//    {
-//        private readonly WeakReference _parent;
-//        private readonly ObservableCollection<object> _items = new ObservableCollection<object>();
-//        private IEnumerable _itemsSource;
-//        private readonly ListCollectionView _collectionView;
-//        private bool _isUsingItemsSource;
+    public class ItemCollection3D : ICollectionView, IList, ICollection
+    {
+        private readonly WeakReference _parent;
+        private readonly ObservableCollection<object> _items = new ObservableCollection<object>();
+        private IEnumerable _itemsSource;
+        private readonly ListCollectionView _collectionView;
+        private bool _isUsingItemsSource;
 
-//        internal ItemCollection3D(DependencyObject parent)
-//        {
-//            _parent = new WeakReference(parent);
-//            _collectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);
-//        }
+        internal ItemCollection3D(ItemsControl3D parent)
+        {
+            _parent = new WeakReference(parent);
+            _collectionView = (ListCollectionView)CollectionViewSource.GetDefaultView(_items);
+        }
 
-//        internal DependencyObject Parent
-//        {
-//            get
-//            {
-//                return (DependencyObject)this._parent.Target;
-//            }
-//        }
+        internal ItemsControl3D Parent
+        {
+            get
+            {
+                return (ItemsControl3D)this._parent.Target;
+            }
+        }
 
-//        internal IEnumerable ItemsSource
-//        {
-//            get
-//            {
-//                return _itemsSource;
-//            }
-//        }
+        internal IEnumerable ItemsSource
+        {
+            get
+            {
+                return _itemsSource;
+            }
+        }
 
-//        internal bool IsUsingItemsSource
-//        {
-//            get
-//            {
-//                return _isUsingItemsSource;
-//            }
-//        }
-       
-//        #region ICollection & ILIst
+        internal bool IsUsingItemsSource
+        {
+            get
+            {
+                return _isUsingItemsSource;
+            }
+        }
 
-//        bool ICollection.IsSynchronized
-//        {
-//            get
-//            {
-//                return false;
-//            }
-//        }
+        #region ICollection & ILIst
 
-//        object ICollection.SyncRoot
-//        {
-//            get
-//            {
-//                if (this.IsUsingItemsSource)
-//                    throw new NotSupportedException("ItemCollectionShouldUseInnerSyncRoot");
-//                else
-//                    return ((ICollection)_items).SyncRoot;
-//            }
-//        }
+        bool ICollection.IsSynchronized
+        {
+            get
+            {
+                return false;
+            }
+        }
 
-//        bool IList.IsFixedSize
-//        {
-//            get
-//            {
-//                return this.IsUsingItemsSource;
-//            }
-//        }
+        object ICollection.SyncRoot
+        {
+            get
+            {
+                if (this.IsUsingItemsSource)
+                    throw new NotSupportedException("ItemCollectionShouldUseInnerSyncRoot");
+                else
+                    return ((ICollection)_items).SyncRoot;
+            }
+        }
 
-//        bool IList.IsReadOnly
-//        {
-//            get
-//            {
-//                return this.IsUsingItemsSource;
-//            }
-//        }
+        bool IList.IsFixedSize
+        {
+            get
+            {
+                return this.IsUsingItemsSource;
+            }
+        }
 
-//        public int Add(object newItem)
-//        {
-//            _items.Add(newItem);
-//            Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
-//            return _collectionView.IndexOf(newItem);
-//        }
+        bool IList.IsReadOnly
+        {
+            get
+            {
+                return this.IsUsingItemsSource;
+            }
+        }
 
-//        public void Clear()
-//        {
-//            _items.Clear();
-//            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-//        }
+        public int Add(object newItem)
+        {
+            _items.Add(newItem);
+            Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
+            return _collectionView.IndexOf(newItem);
+        }
 
-//        public void CopyTo(Array array, int index)
-//        {
-//            if (array == null)
-//                throw new ArgumentNullException("array");
-//            if (array.Rank > 1)
-//                throw new ArgumentException("array.Rank > 1");
-//            if (index < 0)
-//                throw new ArgumentOutOfRangeException("index");
-//            _collectionView.Cast<object>().ToArray().CopyTo(array, index);
-//        }
+        public void Clear()
+        {
+            _items.Clear();
+            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        }
 
-//        public int IndexOf(object item)
-//        {
-//            return _collectionView.IndexOf(item);
-//        }
+        public void CopyTo(Array array, int index)
+        {
+            if (array == null)
+                throw new ArgumentNullException("array");
+            if (array.Rank > 1)
+                throw new ArgumentException("array.Rank > 1");
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index");
+            _collectionView.Cast<object>().ToArray().CopyTo(array, index);
+        }
 
-//        public object GetItemAt(int index)
-//        {
-//            if (index < 0)
-//                throw new ArgumentOutOfRangeException("index");
-//            if (index >= this._collectionView.Count)
-//                throw new ArgumentOutOfRangeException("index");
-//            else
-//                return this._collectionView.GetItemAt(index);
-//        }
+        public int Count { get { return _collectionView.Count; } }
 
-//        public void Insert(int insertIndex, object insertItem)
-//        {
-//            if (insertIndex == 0)
-//            {
-//                _items.Insert(insertIndex, insertItem);
-//            }
-//            else
-//            {
-//                var indexOf = _items.IndexOf(_collectionView.GetItemAt(insertIndex));
-//                _items.Insert(indexOf, insertItem);
-//            }
-//            this.Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
-//        }
+        public int IndexOf(object item)
+        {
+            return _collectionView.IndexOf(item);
+        }
 
-//        public void Remove(object removeItem)
-//        {
-//            _items.Remove(removeItem);
-//            if (!this.IsEmpty)
-//                return;
-//            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-//        }
+        public object GetItemAt(int index)
+        {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index");
+            if (index >= this._collectionView.Count)
+                throw new ArgumentOutOfRangeException("index");
+            else
+                return this._collectionView.GetItemAt(index);
+        }
 
-//        public void RemoveAt(int removeIndex)
-//        {
-//            _collectionView.RemoveAt(removeIndex);
-//            if (!this.IsEmpty)
-//                return;
-//            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-//        }
-        
-//        #endregion ICollection & ILIst
+        public void Insert(int insertIndex, object insertItem)
+        {
+            if (insertIndex == 0)
+            {
+                _items.Insert(insertIndex, insertItem);
+            }
+            else
+            {
+                var indexOf = _items.IndexOf(_collectionView.GetItemAt(insertIndex));
+                _items.Insert(indexOf, insertItem);
+            }
+            this.Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
+        }
 
-//        #region ICollectionView
+        public void Remove(object removeItem)
+        {
+            _items.Remove(removeItem);
+            if (!this.IsEmpty)
+                return;
+            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        }
 
-//        public event NotifyCollectionChangedEventHandler CollectionChanged
-//        {
-//            add
-//            {
-//                _collectionView.CollectionChanged += value;
-//            }
-//            remove
-//            {
-//                _collectionView.CollectionChanged -= value;
-//            }
-//        }
+        public void RemoveAt(int removeIndex)
+        {
+            _collectionView.RemoveAt(removeIndex);
+            if (!this.IsEmpty)
+                return;
+            this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        }
 
-//        public event CurrentChangingEventHandler CurrentChanging
-//        {
-//            add
-//            {
-//                _collectionView.CurrentChanging += value;
-//            }
-//            remove
-//            {
-//                _collectionView.CurrentChanging -= value;
-//            }
-//        }
+        public object this[int index]
+        {
+            get
+            {
+                return _collectionView.GetItemAt(index);
+            }
+            set
+            {
+                var itemAt = _collectionView.GetItemAt(index);
+                var indexOf = _items.IndexOf(itemAt);
+                _items[indexOf] = value; // Not efficient nor nice here
+            }
+        }
 
-//        public event EventHandler CurrentChanged
-//        {
-//            add
-//            {
-//                _collectionView.CurrentChanged += value;
-//            }
-//            remove
-//            {
-//                _collectionView.CurrentChanged -= value;
-//            }
-//        }
+        #endregion ICollection & ILIst
 
-//        public CultureInfo Culture
-//        {
-//            get { return _collectionView.Culture; }
-//            set { _collectionView.Culture = value; }
-//        }
+        #region ICollectionView
 
-//        public IEnumerable SourceCollection { get { return _items; } }
+        public event NotifyCollectionChangedEventHandler CollectionChanged
+        {
+            add
+            {
+                ((INotifyCollectionChanged)_collectionView).CollectionChanged += value;
+            }
+            remove
+            {
+                ((INotifyCollectionChanged)_collectionView).CollectionChanged -= value;
+            }
+        }
 
-//        public Predicate<object> Filter
-//        {
-//            get { return _collectionView.Filter; }
-//            set { _collectionView.Filter = value; }
-//        }
+        public event CurrentChangingEventHandler CurrentChanging
+        {
+            add
+            {
+                _collectionView.CurrentChanging += value;
+            }
+            remove
+            {
+                _collectionView.CurrentChanging -= value;
+            }
+        }
 
-//        public bool CanFilter { get { return _collectionView.CanFilter; } }
+        public event EventHandler CurrentChanged
+        {
+            add
+            {
+                _collectionView.CurrentChanged += value;
+            }
+            remove
+            {
+                _collectionView.CurrentChanged -= value;
+            }
+        }
 
-//        public SortDescriptionCollection SortDescriptions { get { throw new InvalidOperationException("Can a list of 3D items be sorted?"); } }
+        public CultureInfo Culture
+        {
+            get { return _collectionView.Culture; }
+            set { _collectionView.Culture = value; }
+        }
 
-//        public bool CanSort { get { return false; } }
+        public IEnumerable SourceCollection { get { return _items; } }
 
-//        public bool CanGroup { get { return false; } }
+        public Predicate<object> Filter
+        {
+            get { return _collectionView.Filter; }
+            set { _collectionView.Filter = value; }
+        }
 
-//        public ObservableCollection<GroupDescription> GroupDescriptions { get { throw new InvalidOperationException("Can a list of 3D items be grouped?"); } }
+        public bool CanFilter { get { return _collectionView.CanFilter; } }
 
-//        public ReadOnlyObservableCollection<object> Groups { get { throw new InvalidOperationException("Can a list of 3D items be grouped?"); } }
+        public SortDescriptionCollection SortDescriptions { get { throw new InvalidOperationException("Can a list of 3D items be sorted?"); } }
 
-//        public bool IsEmpty { get { return _collectionView.IsEmpty; } }
+        public bool CanSort { get { return false; } }
 
-//        public object CurrentItem { get { return _collectionView.CurrentItem; } }
+        public bool CanGroup { get { return false; } }
 
-//        public int CurrentPosition { get { return _collectionView.CurrentPosition; } }
+        public ObservableCollection<GroupDescription> GroupDescriptions { get { throw new InvalidOperationException("Can a list of 3D items be grouped?"); } }
 
-//        public bool IsCurrentAfterLast { get { return _collectionView.IsCurrentAfterLast; } }
+        public ReadOnlyObservableCollection<object> Groups { get { throw new InvalidOperationException("Can a list of 3D items be grouped?"); } }
 
-//        public bool IsCurrentBeforeFirst { get { return _collectionView.IsCurrentBeforeFirst; } }
+        public bool IsEmpty { get { return _collectionView.IsEmpty; } }
 
-//        public IEnumerator GetEnumerator()
-//        {
-//            return _collectionView.GetEnumerator();
-//        }
+        public object CurrentItem { get { return _collectionView.CurrentItem; } }
 
-//        public bool Contains(object item)
-//        {
-//            return _collectionView.Contains(item);
-//        }
+        public int CurrentPosition { get { return _collectionView.CurrentPosition; } }
 
-//        public void Refresh()
-//        {
-//            _collectionView.Refresh();
-//        }
+        public bool IsCurrentAfterLast { get { return _collectionView.IsCurrentAfterLast; } }
 
-//        public IDisposable DeferRefresh()
-//        {
-//            return _collectionView.DeferRefresh();
-//        }
+        public bool IsCurrentBeforeFirst { get { return _collectionView.IsCurrentBeforeFirst; } }
 
-//        public bool MoveCurrentToFirst()
-//        {
-//            return _collectionView.MoveCurrentToFirst();
-//        }
+        public IEnumerator GetEnumerator()
+        {
+            return _collectionView.GetEnumerator();
+        }
 
-//        public bool MoveCurrentToLast()
-//        {
-//            return _collectionView.MoveCurrentToLast();
-//        }
+        public bool Contains(object item)
+        {
+            return _collectionView.Contains(item);
+        }
 
-//        public bool MoveCurrentToNext()
-//        {
-//            return _collectionView.MoveCurrentToNext();
-//        }
+        public void Refresh()
+        {
+            _collectionView.Refresh();
+        }
 
-//        public bool MoveCurrentToPrevious()
-//        {
-//            return _collectionView.MoveCurrentToPrevious();
-//        }
+        public IDisposable DeferRefresh()
+        {
+            return _collectionView.DeferRefresh();
+        }
 
-//        public bool MoveCurrentTo(object item)
-//        {
-//            return _collectionView.MoveCurrentTo(item);
-//        }
+        public bool MoveCurrentToFirst()
+        {
+            return _collectionView.MoveCurrentToFirst();
+        }
 
-//        public bool MoveCurrentToPosition(int position)
-//        {
-//            return _collectionView.MoveCurrentToPosition(position);
-//        }
+        public bool MoveCurrentToLast()
+        {
+            return _collectionView.MoveCurrentToLast();
+        }
 
-//        #endregion  ICollectionView
-//    }
-//}
+        public bool MoveCurrentToNext()
+        {
+            return _collectionView.MoveCurrentToNext();
+        }
+
+        public bool MoveCurrentToPrevious()
+        {
+            return _collectionView.MoveCurrentToPrevious();
+        }
+
+        public bool MoveCurrentTo(object item)
+        {
+            return _collectionView.MoveCurrentTo(item);
+        }
+
+        public bool MoveCurrentToPosition(int position)
+        {
+            return _collectionView.MoveCurrentToPosition(position);
+        }
+
+        #endregion  ICollectionView
+    }
+}
