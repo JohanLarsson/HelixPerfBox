@@ -17,6 +17,7 @@
     using System.Windows.Markup;
     using System.Windows.Media.Media3D;
     using System.Windows.Threading;
+
     using HelixToolkit.Wpf;
 
     [ContentProperty("Children")]
@@ -34,13 +35,11 @@
             new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemChanged));
 
         private readonly Visual3DCollection _children;
-        private readonly ConcurrentQueue<ItemContainer3D> _containers = new ConcurrentQueue<ItemContainer3D>();
+        private readonly ConcurrentQueue<UIElementItemContainer3D> _containers = new ConcurrentQueue<UIElementItemContainer3D>();
 
         public Selector3D()
         {
-            var ctor = typeof(Visual3DCollection).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).Single();
-            _children = (Visual3DCollection)ctor.Invoke(new object[] { this });
-            //Task.Run(() => CreateGeometries(this.Dispatcher));
+            _children = Visual3DCollectionExt.Create(this);
         }
 
         /// <summary>
@@ -109,14 +108,14 @@
         {
             foreach (var child in Children)
             {
-                var itemContainer3D = (ItemContainer3D)child;
+                var itemContainer3D = (UIElementItemContainer3D)child;
                 BindingOperations.ClearAllBindings(itemContainer3D);
                 _containers.Enqueue(itemContainer3D);
             }
             Children.Clear();
             foreach (Ball item in items)
             {
-                ItemContainer3D container;
+                UIElementItemContainer3D container;
                 if (_containers.TryDequeue(out container))
                 {
                     AddItem(item, container);
@@ -126,13 +125,13 @@
                     var builder = new MeshBuilder();
                     builder.AddSphere(new Point3D(0, 0, 0), 1);
                     var model3D = new GeometryModel3D { Geometry = builder.ToMesh(), Material = Materials.Orange };
-                    var container3D = new ItemContainer3D(model3D);
+                    var container3D = new UIElementItemContainer3D(model3D);
 
                     AddItem(item, container3D);
                 }
             }
         }
-        private void AddItem(Ball item, ItemContainer3D container3D)
+        private void AddItem(Ball item, UIElementItemContainer3D container3D)
         {
 
             var model3D = container3D.Model;
@@ -142,7 +141,7 @@
                 transform.Children.Add(new ScaleTransform3D(item.Radius, item.Radius, item.Radius));
                 transform.Children.Add(new TranslateTransform3D(item.Point3D.X, item.Point3D.Y, item.Point3D.Z));
                 model3D.Transform = transform;
-                container3D.Bind(ItemContainer3D.ItemProperty, item);
+                container3D.Bind(UIElementItemContainer3D.ItemProperty, item);
             }
             Children.Add(container3D);
         }
@@ -168,9 +167,9 @@
             }
         }
 
-        internal ItemContainer3D GetContainerForItem(object item)
+        internal UIElementItemContainer3D GetContainerForItem(object item)
         {
-            return Children.OfType<ItemContainer3D>().FirstOrDefault(x => x.Item == item);
+            return Children.OfType<UIElementItemContainer3D>().FirstOrDefault(x => x.Item == item);
         }
     }
 }

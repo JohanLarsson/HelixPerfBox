@@ -5,13 +5,13 @@
              xmlns:h="http://helix-toolkit.org/wpf"
              xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:system="clr-namespace:System;assembly=System"
              StartupUri="MainWindow.xaml"
              mc:Ignorable="d">
     <Application.Resources>
         <helixPerfBox:PointToTransformConverter x:Key="PointToTransformConverter" />
         <helixPerfBox:RadiusToTransformConverter x:Key="RadiusoTransformConverter" />
         <helixPerfBox:PointAndRadiusToTransformConverter x:Key="PointAndRadiusToTransformConverter" />
-
         <helixPerfBox:TemplateModel x:Key="BallTemplate"
                                     DataType="{x:Type helixPerfBox:Ball}"
                                     d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
@@ -57,7 +57,6 @@
                     </MultiBinding>
                 </h:SphereVisual3D.Transform>
             </h:SphereVisual3D>
-
         </helixPerfBox:TemplateModel>
     </Application.Resources>
 </Application>

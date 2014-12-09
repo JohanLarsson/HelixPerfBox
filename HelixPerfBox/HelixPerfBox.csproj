@@ -90,9 +90,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Ball.cs" />
-    <Compile Include="BindingHelper.cs" />
-    <Compile Include="ItemContainer3D.cs" />
-    <Compile Include="ItemsControl3D.cs" />
+    <Compile Include="HelixStuff\ItemContainer3D.cs" />
+    <Compile Include="HelixStuff\ItemContainerGenerator3D.cs" />
+    <Compile Include="Reflection\BindingHelper.cs" />
+    <Compile Include="HelixStuff\UIElementItemContainer3D.cs" />
+    <Compile Include="HelixStuff\ItemCollection3D.cs" />
+    <Compile Include="Reflection\Helper.cs" />
+    <Compile Include="Reflection\ItemsCollectionExt.cs" />
+    <Compile Include="HelixStuff\ItemsControl3D.cs" />
     <Compile Include="PointToTransformConverter.cs" />
     <Compile Include="Properties\CanBeNullAttribute.cs" />
     <Compile Include="Properties\AspMvcActionAttribute.cs" />
@@ -132,8 +137,9 @@
     <Compile Include="Properties\RazorSectionAttribute.cs" />
     <Compile Include="Properties\StringFormatMethodAttribute.cs" />
     <Compile Include="Properties\UsedImplicitlyAttribute.cs" />
-    <Compile Include="Selector3D.cs" />
-    <Compile Include="TemplateModel.cs" />
+    <Compile Include="Reflection\Visual3DCollectionExt.cs" />
+    <Compile Include="HelixStuff\Selector3D.cs" />
+    <Compile Include="HelixStuff\TemplateModel.cs" />
     <Compile Include="ViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

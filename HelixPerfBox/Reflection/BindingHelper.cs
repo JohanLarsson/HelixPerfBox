@@ -20,6 +20,10 @@
         public const string ValidationRules = "ValidationRules";
         public const string Bindings_ = "Bindings";
 
+        private static readonly MethodInfo GetSourceItemMethod = typeof(BindingExpressionBase).GetMethod(
+            "GetSourceItem",
+            BindingFlags.Instance | BindingFlags.NonPublic);
+
         internal static void Bind<TSource>(this DependencyObject target,
                                   DependencyProperty targetProperty,
                                   TSource source,
@@ -198,6 +202,12 @@
                 return null;
             }
             return property.GetValue(binding);
+        }
+
+        public static object GetSourceItemWithReflection(this BindingExpressionBase self, object newValue)
+        {
+            var invoke = GetSourceItemMethod.Invoke(self, new[] { newValue });
+            return invoke;
         }
     }
 }

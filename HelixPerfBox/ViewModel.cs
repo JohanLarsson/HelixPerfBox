@@ -77,45 +77,30 @@
         public bool Is0
         {
             get { return _side == 0; }
-            set
-            {
-                Side = 0;
-            }
+            set { Side = 0; }
         }
 
         public bool Is25
         {
             get { return _side == 5; }
-            set
-            {
-                Side = 5;
-            }
+            set { Side = 5; }
         }
 
         public bool Is100
         {
             get { return _side == 10; }
-            set
-            {
-                Side = 10;
-            }
+            set { Side = 10; }
         }
 
         public bool Is400
         {
             get { return _side == 20; }
-            set
-            {
-                Side = 20;
-            }
+            set { Side = 20; }
         }
 
         public int Side
         {
-            get
-            {
-                return _side;
-            }
+            get { return _side; }
             set
             {
                 if (value == _side)
