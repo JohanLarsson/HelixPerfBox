@@ -29,5 +29,25 @@
         {
             Viewport3D.ZoomExtents(300);
         }
+
+        private async void OnMoveCenter(object sender, RoutedEventArgs e)
+        {
+            //var toggleButton = (ToggleButton)sender;
+            //int sign = 1;
+            //while (toggleButton.IsChecked == true)
+            //{
+            //    if (SphereVisual3D.Center.X > 10)
+            //    {
+            //        sign = -1;
+            //    }
+
+            //    if (SphereVisual3D.Center.X < -10)
+            //    {
+            //        sign = 1;
+            //    }
+            //    SphereVisual3D.Center += new Vector3D(sign, 0, 0);
+            //    await System.Windows.Threading.Dispatcher.Yield();
+            //}
+        }
     }
 }

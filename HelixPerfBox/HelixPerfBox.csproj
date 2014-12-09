@@ -94,6 +94,7 @@
     <Compile Include="BindingHelper.cs" />
     <Compile Include="ItemContainer3D.cs" />
     <Compile Include="ItemsControl3D.cs" />
+    <Compile Include="KnownTypes.cs" />
     <Compile Include="ModelVisual3DFactory.cs" />
     <Compile Include="Properties\CanBeNullAttribute.cs" />
     <Compile Include="Properties\AspMvcActionAttribute.cs" />

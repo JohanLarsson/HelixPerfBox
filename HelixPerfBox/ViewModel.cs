@@ -14,13 +14,14 @@
     {
         private Ball _selectedRed;
         private bool _isBallsVisible = true;
+        private bool _moveCenter;
         public ViewModel()
         {
             var redBalls = new List<Ball>();
             var blueBalls = new List<Ball>();
-            for (int x = 0; x < 20; x++)
+            for (int x = 0; x < 10; x++)
             {
-                for (int y = 0; y < 20; y++)
+                for (int y = 0; y < 10; y++)
                 {
                     redBalls.Add(new Ball(new Point3D(x, y, 0), 0.3));
                     blueBalls.Add(new Ball(new Point3D(x, y, 5), 0.3));
@@ -71,6 +72,7 @@
                 OnPropertyChanged();
             }
         }
+
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

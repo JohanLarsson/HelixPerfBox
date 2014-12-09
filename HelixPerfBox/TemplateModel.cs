@@ -18,6 +18,7 @@
         private Type _dataType;
         private PropertyInfo[] _dataTypeProperties;
         private ModelVisual3D _model;
+        private IEnumerable<DependencyProperty> _dependencyProperties;
         private IEnumerable<Binding> _bindings;
         private IEnumerable<BindingExpressionBase> _bindingExpressions;
         public TemplateModel()
@@ -30,14 +31,13 @@
         }
 
         [DefaultValue(null)]
-        [Ambient]
         public object DataType
         {
             get { return _dataType; }
             set
             {
                 CheckSealed();
-                _dataType = (Type) value;
+                _dataType = (Type)value;
                 _dataTypeProperties = _dataType.GetProperties();
                 VerifyBindings();
             }
@@ -72,6 +72,7 @@
                 _model = value;
                 _bindings = _model.Bindings();
                 _bindingExpressions = _model.BindingExpressions();
+                _dependencyProperties = _model.DependencyProperties();
                 VerifyBindings();
             }
         }
@@ -86,6 +87,15 @@
             var clone = Model.Content.CloneCurrentValue();
             var visual3D = (ModelVisual3D)Activator.CreateInstance(Model.GetType());
             visual3D.Content = clone;
+            foreach (var dependencyProperty in _dependencyProperties)
+            {
+                if (dependencyProperty == ModelVisual3D.ContentProperty)
+                {
+                    continue;
+                }
+                var value = Model.GetValue(dependencyProperty);
+                visual3D.SetCurrentValue(dependencyProperty, value);
+            }
             return visual3D;
         }
 
