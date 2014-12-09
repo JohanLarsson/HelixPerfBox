@@ -3,75 +3,61 @@
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Linq.Expressions;
+    using System.Reactive.Linq;
     using System.Runtime.CompilerServices;
     using System.Windows.Media.Media3D;
     using Annotations;
     using Gu.Reactive;
     using System.Reactive;
 
+    using Gu.Wpf.Reactive;
+
     public class ViewModel : INotifyPropertyChanged
     {
-        private readonly ObservableCollection<Ball> _redBalls = new ObservableCollection<Ball>();
-        private readonly ObservableCollection<Ball> _blueBalls = new ObservableCollection<Ball>();
+        private readonly ObservableCollection<Ball> _balls = new ObservableCollection<Ball>();
 
-        private Ball _selectedRed;
+        private Ball _selectedBall;
         private bool _isBallsVisible = true;
 
+        private int _side = 5;
 
         public ViewModel()
         {
-            this.ToObservable(x => x.IsBallsVisible)
-                .Subscribe(
-                    x =>
-                        {
-                            if (IsBallsVisible)
-                            {
-                                CreateBalls(10);
-                            }
-                            else
-                            {
-                                _blueBalls.Clear();
-                                _redBalls.Clear();
-                            }
-                        });
-        }
-
-        private void CreateBalls(int side)
-        {
-            for (int x = 0; x < side; x++)
-            {
-                for (int y = 0; y < side; y++)
-                {
-                    _redBalls.Add(new Ball(new Point3D(x, y, 0), 0.3));
-                    _blueBalls.Add(new Ball(new Point3D(x, y, 5), 0.3));
-                }
-            }
+            Observable.Merge(this.ToObservable(x => x.IsBallsVisible), this.ToObservable(x => x.Side))
+                      .Subscribe(
+                          x =>
+                          {
+                              if (IsBallsVisible)
+                              {
+                                  CreateBalls(Side);
+                              }
+                              else
+                              {
+                                  _balls.Clear();
+                              }
+                          });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public ObservableCollection<Ball> RedBalls
+        public ObservableCollection<Ball> Balls
         {
-            get { return _redBalls; }
+            get { return _balls; }
         }
 
-        public Ball SelectedRed
+        public Ball SelectedBall
         {
-            get { return _selectedRed; }
+            get { return _selectedBall; }
             set
             {
-                if (Equals(value, _selectedRed))
+                if (Equals(value, _selectedBall))
                 {
                     return;
                 }
-                _selectedRed = value;
+                _selectedBall = value;
                 OnPropertyChanged();
             }
-        }
-
-        public ObservableCollection<Ball> BlueBalls
-        {
-            get { return _blueBalls; }
         }
 
         public bool IsBallsVisible
@@ -88,6 +74,63 @@
             }
         }
 
+        public bool Is0
+        {
+            get { return _side == 0; }
+            set
+            {
+                Side = 0;
+            }
+        }
+
+        public bool Is25
+        {
+            get { return _side == 5; }
+            set
+            {
+                Side = 5;
+            }
+        }
+
+        public bool Is100
+        {
+            get { return _side == 10; }
+            set
+            {
+                Side = 10;
+            }
+        }
+
+        public bool Is400
+        {
+            get { return _side == 20; }
+            set
+            {
+                Side = 20;
+            }
+        }
+
+        public int Side
+        {
+            get
+            {
+                return _side;
+            }
+            set
+            {
+                if (value == _side)
+                {
+                    return;
+                }
+                _side = value;
+                OnPropertyChanged();
+
+                OnPropertyChanged(() => Is0);
+                OnPropertyChanged(() => Is25);
+                OnPropertyChanged(() => Is100);
+                OnPropertyChanged(() => Is400);
+            }
+        }
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -96,6 +139,31 @@
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        /// <summary>
+        /// Calls nameof internally
+        /// </summary>
+        /// <param name="propety"></param>
+        protected virtual void OnPropertyChanged(Expression<Func<object>> propety)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(NameOf.Property(propety)));
+            }
+        }
+
+        private void CreateBalls(int side)
+        {
+            _balls.Clear();
+            for (int x = 0; x < side; x++)
+            {
+                for (int y = 0; y < side; y++)
+                {
+                    _balls.Add(new Ball(new Point3D(x, y, 0), 0.3));
+                }
             }
         }
     }

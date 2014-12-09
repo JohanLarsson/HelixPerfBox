@@ -1,12 +1,63 @@
 ﻿<Application x:Class="HelixPerfBox.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:h="http://helix-toolkit.org/wpf"
              xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
-             StartupUri="MainWindow.xaml">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             StartupUri="MainWindow.xaml"
+             mc:Ignorable="d">
     <Application.Resources>
         <helixPerfBox:PointToTransformConverter x:Key="PointToTransformConverter" />
         <helixPerfBox:RadiusToTransformConverter x:Key="RadiusoTransformConverter" />
         <helixPerfBox:PointAndRadiusToTransformConverter x:Key="PointAndRadiusToTransformConverter" />
+
+        <helixPerfBox:TemplateModel x:Key="BallTemplate"
+                                    DataType="{x:Type helixPerfBox:Ball}"
+                                    d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
+            <h:SphereVisual3D Center="{Binding Point3D}"
+                              Fill="BlueViolet"
+                              Radius="{Binding Radius}">
+                <h:SphereVisual3D.Transform>
+                    <TranslateTransform3D OffsetX="{Binding Point3D.X}" />
+                </h:SphereVisual3D.Transform>
+            </h:SphereVisual3D>
+        </helixPerfBox:TemplateModel>
+
+        <helixPerfBox:TemplateModel x:Key="ElementNameTemplate"
+                                    DataType="{x:Type helixPerfBox:Ball}"
+                                    d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
+            <h:SphereVisual3D Center="{Binding Point3D}"
+                              Fill="{Binding SelectedItem,
+                                             ElementName=FillBox}"
+                              Radius="{Binding Radius}">
+                <h:SphereVisual3D.Transform>
+                    <TranslateTransform3D OffsetX="{Binding Point3D.X}" />
+                </h:SphereVisual3D.Transform>
+            </h:SphereVisual3D>
+        </helixPerfBox:TemplateModel>
+
+        <helixPerfBox:TemplateModel x:Key="ConverterTemplate"
+                                    DataType="{x:Type helixPerfBox:Ball}"
+                                    d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
+            <h:SphereVisual3D Fill="BlueViolet"
+                              Radius="0.3"
+                              Transform="{Binding Point3D,
+                                                  Converter={StaticResource PointToTransformConverter}}" />
+        </helixPerfBox:TemplateModel>
+
+        <helixPerfBox:TemplateModel x:Key="MultiBindingTemplate"
+                                    DataType="{x:Type helixPerfBox:Ball}"
+                                    d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
+            <h:SphereVisual3D Fill="{Binding SelectedItem, ElementName=FillBox}">
+                <h:SphereVisual3D.Transform>
+                    <MultiBinding Converter="{StaticResource PointAndRadiusToTransformConverter}">
+                        <Binding Path="Point3D" />
+                        <Binding Path="Radius" />
+                    </MultiBinding>
+                </h:SphereVisual3D.Transform>
+            </h:SphereVisual3D>
+
+        </helixPerfBox:TemplateModel>
     </Application.Resources>
 </Application>

@@ -14,14 +14,15 @@
             InitializeComponent();
             var viewModel = new ViewModel();
             DataContext = viewModel;
-            MaterialBox.Items.Add(Brushes.Black);
-            MaterialBox.Items.Add(Brushes.Red);
-            MaterialBox.Items.Add(Brushes.Blue);
+            FillBox.Items.Add(Brushes.Black);
+            FillBox.Items.Add(Brushes.Red);
+            FillBox.Items.Add(Brushes.Blue);
+            FillBox.Items.Add(Brushes.HotPink);
         }
 
         private void OnZoomExtentsClick(object sender, RoutedEventArgs e)
         {
-            Viewport3D.ZoomExtents(300);
+            //Viewport3D.ZoomExtents(300);
         }
     }
 }

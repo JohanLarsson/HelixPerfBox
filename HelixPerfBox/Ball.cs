@@ -1,17 +1,67 @@
 namespace HelixPerfBox
 {
+    using System.ComponentModel;
+    using System.Runtime.CompilerServices;
     using System.Windows.Media.Media3D;
 
-    public class Ball
+    using HelixPerfBox.Annotations;
+
+    public class Ball : INotifyPropertyChanged
     {
+        private double _radius;
+
+        private Point3D _point3D;
+
         public Ball(Point3D point3D,  double radius)
         {
             Point3D = point3D;
             Radius = radius;
         }
 
-        public Point3D Point3D { get; private set; }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public double Radius { get; private set; }
+        public Point3D Point3D
+        {
+            get
+            {
+                return _point3D;
+            }
+            set
+            {
+                if (value.Equals(_point3D))
+                {
+                    return;
+                }
+                _point3D = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double Radius
+        {
+            get
+            {
+                return _radius;
+            }
+            set
+            {
+                if (value.Equals(_radius))
+                {
+                    return;
+                }
+                _radius = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [NotifyPropertyChangedInvocator]
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            var handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
     }
 }
