@@ -60,7 +60,7 @@ namespace HelixPerfBox
                 if (_items == null)
                 {
                     _items = new ItemCollection3D(this);
-                    _itemContainerGenerator = new ItemContainerGenerator3D(this);
+                    _itemContainerGenerator = this.CreateItemContainerGenerator();
                     (_items).CollectionChanged += this.OnItemCollectionChanged;
                 }
                 return _items;
@@ -109,6 +109,15 @@ namespace HelixPerfBox
             if (_itemContainerGenerator == null)
                 return;
             _itemContainerGenerator.Refresh();
+        }
+
+        /// <summary>
+        /// Override this to inject custom containergenerator
+        /// </summary>
+        /// <returns></returns>
+        protected virtual ItemContainerGenerator3D CreateItemContainerGenerator()
+        {
+            return new ItemContainerGenerator3D(this);
         }
     }
 }

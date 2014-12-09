@@ -92,6 +92,7 @@
     <Compile Include="Ball.cs" />
     <Compile Include="HelixStuff\ItemContainer3D.cs" />
     <Compile Include="HelixStuff\ItemContainerGenerator3D.cs" />
+    <Compile Include="HelixStuff\UiElementItemContainerGenerator.cs" />
     <Compile Include="Reflection\BindingHelper.cs" />
     <Compile Include="HelixStuff\UIElementItemContainer3D.cs" />
     <Compile Include="HelixStuff\ItemCollection3D.cs" />

@@ -11,7 +11,7 @@
 
     public class ItemContainerGenerator3D
     {
-        private readonly ItemsControl3D _itemsControl3D;
+        private readonly WeakReference _parent = new WeakReference(null);
         private readonly ConcurrentQueue<Visual3D> _cache = new ConcurrentQueue<Visual3D>();
         private readonly ConditionalWeakTable<object, Visual3D> _map = new ConditionalWeakTable<object, Visual3D>();
 
@@ -22,10 +22,18 @@
             new PropertyMetadata(default(object)));
 
 
-        public ItemContainerGenerator3D(ItemsControl3D itemsControl3D)
+        public ItemContainerGenerator3D(ItemsControl3D parent)
         {
-            _itemsControl3D = itemsControl3D;
-            CollectionChangedEventManager.AddHandler(itemsControl3D.Items, this.OnCollectionChanged);
+            this._parent.Target = parent;
+            CollectionChangedEventManager.AddHandler(parent.Items, this.OnCollectionChanged);
+        }
+
+        public ItemsControl3D Parent
+        {
+            get
+            {
+                return (ItemsControl3D)this._parent.Target;
+            }
         }
 
         public static void SetItemContainerForItem(Visual3D element, object value)
@@ -38,52 +46,46 @@
             return (object)element.GetValue(ItemContainerForItemProperty);
         }
 
-        public void Refresh()
+        public virtual void Refresh()
         {
-            this.Reset(_itemsControl3D.Items);
+            this.Reset(this.Parent.Items);
         }
 
-        public void Reset(IEnumerable newItems)
+        protected virtual void Reset(IEnumerable newItems)
         {
             RemoveAll();
-            Add(_itemsControl3D.Items);
+            Add(this.Parent.Items);
         }
 
-        public Visual3D GenerateNext()
+        protected virtual Visual3D GenerateNext()
         {
             bool temp;
             return GenerateNext(out temp);
         }
 
-        public virtual Visual3D GenerateNext(out bool isNewlyRealized)
+        protected virtual Visual3D GenerateNext(out bool isNewlyRealized)
         {
             Visual3D visual3D;
             isNewlyRealized = false;
             if (!_cache.TryDequeue(out visual3D))
             {
-                visual3D = _itemsControl3D.ItemTemplate.Create();
+                visual3D = CreateNewContainer();
                 isNewlyRealized = true;
             }
             return visual3D;
         }
 
-        public void PrepareItemContainer(Visual3D container)
+        protected virtual void RemoveAll()
         {
-            var modelVisual3D = _itemsControl3D.ItemTemplate.Create();
-            _cache.Enqueue(modelVisual3D);
-        }
-
-        public void RemoveAll()
-        {
-            var start = this._itemsControl3D.Children.Count - 1;
+            var start = this.Parent.Children.Count - 1;
             for (int i = start; i >= 0; i--)
             {
-                var child = this._itemsControl3D.Children[i];
+                var child = this.Parent.Children[i];
                 this.Remove(child);
             }
         }
 
-        public void Remove(IEnumerable oldItems)
+        protected virtual void Remove(IEnumerable oldItems)
         {
             if (oldItems == null)
             {
@@ -100,10 +102,10 @@
             }
         }
 
-        private void Remove(Visual3D container)
+        protected virtual void Remove(Visual3D container)
         {
-            _itemsControl3D.Children.Remove(container);
-            UnlinkContainerFromItem(container, _itemsControl3D);
+            this.Parent.Children.Remove(container);
+            UnlinkContainerFromItem(container, this.Parent);
             Recycle(container);
         }
 
@@ -116,18 +118,18 @@
             foreach (var newItem in newItems)
             {
                 var container = GenerateNext();
-                LinkContainerForItem(container, newItem, _itemsControl3D);
-                _itemsControl3D.Children.Add(container);
+                LinkContainerForItem(container, newItem, this.Parent);
+                this.Parent.Children.Add(container);
                 System.Windows.Threading.Dispatcher.Yield();
             }
         }
 
-        public void Recycle(Visual3D visual3D)
+        protected virtual void Recycle(Visual3D visual3D)
         {
             _cache.Enqueue(visual3D);
         }
 
-        internal void UnlinkContainerFromItem(Visual3D container, ItemsControl3D host)
+        protected virtual void UnlinkContainerFromItem(Visual3D container, ItemsControl3D host)
         {
             var item = GetItemContainerForItem(container);
             container.ClearValue(ItemContainerForItemProperty);
@@ -138,7 +140,7 @@
             container.SetValue(dp, null);
         }
 
-        internal void LinkContainerForItem(Visual3D container, object item, ItemsControl3D host)
+        protected virtual void LinkContainerForItem(Visual3D container, object item, ItemsControl3D host)
         {
             container.SetValue(ItemContainerForItemProperty, item);
             if (container == item)
@@ -149,7 +151,7 @@
             container.SetValue(dp, item);
         }
 
-        private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -166,11 +168,17 @@
                 case NotifyCollectionChangedAction.Move:
                     return;
                 case NotifyCollectionChangedAction.Reset:
-                    this.Reset(_itemsControl3D.Items);
+                    this.Reset(this.Parent.Items);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+
+        protected virtual Visual3D CreateNewContainer()
+        {
+            return this.Parent.ItemTemplate.Create();
         }
     }
 }
