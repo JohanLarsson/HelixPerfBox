@@ -73,6 +73,11 @@ namespace HelixPerfBox
             set { SetValue(ItemTemplateProperty, value); }
         }
 
+        protected internal Visual3D GetContainerForItem(object item)
+        {
+            return _itemContainerGenerator.GetContainerForItem(item);
+        }
+
         private static void OnItemsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var itemsControl3D = (ItemsControl3D)o;

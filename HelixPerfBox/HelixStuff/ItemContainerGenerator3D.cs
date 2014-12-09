@@ -15,13 +15,6 @@
         private readonly ConcurrentQueue<Visual3D> _cache = new ConcurrentQueue<Visual3D>();
         private readonly ConditionalWeakTable<object, Visual3D> _map = new ConditionalWeakTable<object, Visual3D>();
 
-        public static readonly DependencyProperty ItemContainerForItemProperty = DependencyProperty.RegisterAttached(
-            "ItemContainerForItem",
-            typeof(object),
-            typeof(ItemContainerGenerator3D),
-            new PropertyMetadata(default(object)));
-
-
         public ItemContainerGenerator3D(ItemsControl3D parent)
         {
             this._parent.Target = parent;
@@ -36,14 +29,14 @@
             }
         }
 
-        public static void SetItemContainerForItem(Visual3D element, object value)
+        public Visual3D GetContainerForItem(object item)
         {
-            element.SetValue(ItemContainerForItemProperty, value);
-        }
-
-        public static object GetItemContainerForItem(DependencyObject element)
-        {
-            return (object)element.GetValue(ItemContainerForItemProperty);
+            Visual3D container;
+            if (!_map.TryGetValue(item, out container))
+            {
+                throw new InvalidOperationException("Could not find container for item");
+            }
+            return container;
         }
 
         public virtual void Refresh()
@@ -93,11 +86,7 @@
             }
             foreach (var remove in oldItems)
             {
-                Visual3D container;
-                if (!_map.TryGetValue(remove, out container))
-                {
-                    throw new InvalidOperationException("Could not find container for item");
-                }
+                var container = GetContainerForItem(remove);
                 Remove(container);
             }
         }
@@ -131,8 +120,8 @@
 
         protected virtual void UnlinkContainerFromItem(Visual3D container, ItemsControl3D host)
         {
-            var item = GetItemContainerForItem(container);
-            container.ClearValue(ItemContainerForItemProperty);
+            var item = container.GetValue(ItemContainer3D.ItemProperty);
+            container.ClearValue(ItemContainer3D.ItemProperty);
             if (container == item)
                 return;
             _map.Remove(item);
@@ -142,7 +131,7 @@
 
         protected virtual void LinkContainerForItem(Visual3D container, object item, ItemsControl3D host)
         {
-            container.SetValue(ItemContainerForItemProperty, item);
+            container.SetValue(ItemContainer3D.ItemProperty, item);
             if (container == item)
                 return;
             _map.Add(item, container);

@@ -1,19 +1,9 @@
 ﻿namespace HelixPerfBox
 {
-    using System.Collections;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
-    using System.ComponentModel;
-    using System.Linq;
+    using System;
     using System.Windows;
-    using System.Windows.Controls;
     using System.Windows.Controls.Primitives;
-    using System.Windows.Data;
     using System.Windows.Markup;
-    using System.Windows.Media.Media3D;
-
-    using HelixToolkit.Wpf;
 
     [ContentProperty("Children")]
     public class Selector3D : ItemsControl3D
@@ -75,7 +65,7 @@
             var selector3D = (Selector3D)o;
             if (e.OldValue != null)
             {
-                var container3D = selector3D.GetContainerForItem(e.OldValue);
+                var container3D = selector3D.GetContainerForItem(e.OldValue) as UIElementItemContainer3D;
                 if (container3D != null)
                 {
                     container3D.IsSelected = false;
@@ -83,7 +73,7 @@
             }
             if (e.NewValue != null)
             {
-                var container3D = selector3D.GetContainerForItem(e.NewValue);
+                var container3D = selector3D.GetContainerForItem(e.NewValue) as UIElementItemContainer3D;
                 if (container3D != null)
                 {
                     container3D.IsSelected = true;

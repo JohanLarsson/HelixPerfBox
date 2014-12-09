@@ -88,7 +88,9 @@
 
                         <!--  <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />  -->
 
-                        <helixPerfBox:Selector3D ItemsSource="{Binding Balls}" SelectedItem="{Binding SelectedBall}" />
+                        <helixPerfBox:Selector3D ItemTemplate="{StaticResource MultiBindingTemplate}"
+                                                 ItemsSource="{Binding Balls}"
+                                                 SelectedItem="{Binding SelectedBall}" />
 
                     </h:HelixViewport3D>
                 </TabItem>
