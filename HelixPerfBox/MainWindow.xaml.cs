@@ -29,10 +29,7 @@ namespace HelixPerfBox
             InitializeComponent();
             var viewModel = new ViewModel();
             DataContext = viewModel;
-            FillBox.Items.Add(Brushes.Black);
-            FillBox.Items.Add(Brushes.Red);
-            FillBox.Items.Add(Brushes.Blue);
-            FillBox.Items.Add(Brushes.HotPink);
+
 
             //var sphereVisual3D = new SphereVisual3D { Radius = 0.5, Fill = Brushes.Yellow, Center = new Point3D(1, 1, 0) };
             //var container = new ContainerUIElement3D();
@@ -54,7 +51,7 @@ namespace HelixPerfBox
         /// </param>
         private void OnZoomExtentsClick(object sender, RoutedEventArgs e)
         {
-            SandboxViewPort.ZoomExtents(300);
+            //SandboxViewPort.ZoomExtents(300);
             
             // Viewport3D.ZoomExtents(300);
         }

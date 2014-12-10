@@ -31,12 +31,13 @@ namespace HelixPerfBox
         /// <summary>
         /// The create new container.
         /// </summary>
+        /// <param name="item"></param>
         /// <returns>
         /// The <see cref="Visual3D"/>.
         /// </returns>
-        protected override Visual3D CreateNewContainer()
+        protected override Visual3D CreateNewContainer(object item)
         {
-            var modelVisual3D = Parent.ItemTemplate.Create();
+            var modelVisual3D = base.CreateNewContainer(item);
             var container3D = new UIElementItemContainer3D(modelVisual3D);
             return container3D;
         }

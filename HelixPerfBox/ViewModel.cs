@@ -12,36 +12,26 @@ namespace HelixPerfBox
     using System;
     using System.Collections.ObjectModel;
     using System.ComponentModel;
+    using System.Drawing;
     using System.Linq.Expressions;
     using System.Runtime.CompilerServices;
     using System.Windows.Media.Media3D;
 
     using HelixPerfBox.Annotations;
 
+    using Brush = System.Windows.Media.Brush;
+
     /// <summary>
     /// The view model.
     /// </summary>
     public class ViewModel : INotifyPropertyChanged
     {
-        /// <summary>
-        /// The _balls.
-        /// </summary>
         private readonly ObservableCollection<Ball> _balls = new ObservableCollection<Ball>();
-
-        /// <summary>
-        /// The _selected ball.
-        /// </summary>
         private Ball _selectedBall;
-
-        /// <summary>
-        /// The _is balls visible.
-        /// </summary>
         private bool _isBallsVisible = true;
-
-        /// <summary>
-        /// The _side.
-        /// </summary>
         private int _side = 5;
+
+        private Brush _selectedBrush;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ViewModel"/> class.
@@ -79,6 +69,37 @@ namespace HelixPerfBox
                 }
 
                 _selectedBall = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public System.Windows.Media.Brush[] Brushes
+        {
+            get
+            {
+                return new[]
+                           {
+                              System.Windows.Media.Brushes.Black,
+                               System.Windows.Media.Brushes.Red,
+                               System.Windows.Media.Brushes.Blue,
+                               System.Windows.Media.Brushes.Green,
+                           };
+            }
+        }
+
+        public System.Windows.Media.Brush SelectedBrush
+        {
+            get
+            {
+                return _selectedBrush;
+            }
+            set
+            {
+                if (Equals(value, _selectedBrush))
+                {
+                    return;
+                }
+                _selectedBrush = value;
                 OnPropertyChanged();
             }
         }

@@ -138,6 +138,8 @@ namespace HelixPerfBox
 
         /// <summary>
         /// The reset.
+        /// This clears the cache and generates new containers.
+        /// Call when template changes
         /// </summary>
         /// <param name="newItems">
         /// The new items.
@@ -145,7 +147,16 @@ namespace HelixPerfBox
         protected virtual void Reset(IEnumerable newItems)
         {
             RemoveAll();
+            ClearCache();
             Add(Parent.Items);
+        }
+
+        protected virtual void ClearCache()
+        {
+            Visual3D container;
+            while (_cache.TryDequeue(out container))
+            {
+            }
         }
 
         /// <summary>
@@ -154,10 +165,10 @@ namespace HelixPerfBox
         /// <returns>
         /// The <see cref="Visual3D"/>.
         /// </returns>
-        protected virtual Visual3D GenerateNext()
+        protected virtual Visual3D GenerateNext(object item)
         {
             bool temp;
-            return GenerateNext(out temp);
+            return GenerateNext(item, out temp);
         }
 
         /// <summary>
@@ -169,13 +180,18 @@ namespace HelixPerfBox
         /// <returns>
         /// The <see cref="Visual3D"/>.
         /// </returns>
-        protected virtual Visual3D GenerateNext(out bool isNewlyRealized)
+        protected virtual Visual3D GenerateNext(object item, out bool isNewlyRealized)
         {
+            if (item is Visual3D)
+            {
+                isNewlyRealized = false;
+                return item as Visual3D;
+            }
             Visual3D visual3D;
             isNewlyRealized = false;
             if (!_cache.TryDequeue(out visual3D))
             {
-                visual3D = CreateNewContainer();
+                visual3D = CreateNewContainer(item);
                 isNewlyRealized = true;
             }
 
@@ -243,8 +259,12 @@ namespace HelixPerfBox
 
             foreach (var newItem in newItems)
             {
-                var container = GenerateNext();
+                var container = GenerateNext(newItem);
                 LinkContainerForItem(container, newItem, Parent);
+                if(!ReferenceEquals(container, newItem))
+                {
+                   Parent.ItemTemplate.SetBindings(container, newItem);
+                }
                 Parent.Children.Add(container);
                 Dispatcher.Yield();
             }
@@ -275,7 +295,7 @@ namespace HelixPerfBox
             var item = container.GetValue(ItemContainer3D.ItemProperty);
             container.ClearValue(ItemContainer3D.ItemProperty);
             //container.ClearValue(FreezableExt.DataContextProxyProperty);
-            if (container == item)
+            if (item == null)
                 return;
             _map.Remove(item);
         }
@@ -296,11 +316,8 @@ namespace HelixPerfBox
         {
             if (container == item)
                 return;
-            _map.Add(item, container);
             container.SetValue(ItemContainer3D.ItemProperty, item);
-            host.ItemTemplate.SetBindings(container, item);
-            //container.SetValue(FrameworkElement.DataContextProperty, item);
-            //container.SetValue(FreezableExt.DataContextProxyProperty, item);
+            _map.Add(item, container);
         }
 
         /// <summary>
@@ -341,10 +358,11 @@ namespace HelixPerfBox
         /// <summary>
         /// The create new container.
         /// </summary>
+        /// <param name="item"></param>
         /// <returns>
         /// The <see cref="Visual3D"/>.
         /// </returns>
-        protected virtual Visual3D CreateNewContainer()
+        protected virtual Visual3D CreateNewContainer(object item)
         {
             return Parent.ItemTemplate.Create();
         }

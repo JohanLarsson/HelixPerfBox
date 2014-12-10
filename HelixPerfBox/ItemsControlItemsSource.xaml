@@ -9,17 +9,28 @@
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
-    <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
-        <h:HelixViewport3D.Resources />
-        <h:SunLight />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource NumebrOfBallsTemplate}" />
+            <ListBox x:Name="FillBox" Style="{StaticResource FillBoxStyle}" />
+        </StackPanel>
 
-        <!--
-            <local:ItemsControl3D ItemTemplate="{StaticResource BallTemplate}" ItemsSource="{Binding Balls}" />
-            
-            <local:ItemsControl3D ItemTemplate="{StaticResource ElementNameTemplate}" ItemsSource="{Binding Balls}" />
-            
-            <local:ItemsControl3D ItemTemplate="{StaticResource ConverterTemplate}" ItemsSource="{Binding Balls}" />
-        -->
-        <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource Multi1515Template}" ItemsSource="{Binding Balls}" />
-    </h:HelixViewport3D>
+        <h:HelixViewport3D Grid.Row="1" ZoomExtentsWhenLoaded="True">
+            <h:HelixViewport3D.Resources />
+            <h:SunLight />
+
+            <!--
+                <local:ItemsControl3D ItemTemplate="{StaticResource BallTemplate}" ItemsSource="{Binding Balls}" />
+                
+                <local:ItemsControl3D ItemTemplate="{StaticResource ElementNameTemplate}" ItemsSource="{Binding Balls}" />
+                
+                <local:ItemsControl3D ItemTemplate="{StaticResource ConverterTemplate}" ItemsSource="{Binding Balls}" />
+            -->
+            <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource Multi1515Template}" ItemsSource="{Binding Balls}" />
+        </h:HelixViewport3D>
+    </Grid>
 </UserControl>

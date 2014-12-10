@@ -9,14 +9,42 @@
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
-    <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
-        <h:SunLight />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <ContentPresenter Content="{Binding}" ContentTemplate="{StaticResource NumebrOfBallsTemplate}" />
+            <ListBox x:Name="FillBox" Style="{StaticResource FillBoxStyle}" />
+        </StackPanel>
 
-        <!--  <helixPerfBox:Selector3D ItemsSource="{Binding Balls}" SelectedItem="{Binding SelectedRed}" />  -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <DataGrid AutoGenerateColumns="False"
+                      ItemsSource="{Binding Balls}"
+                      SelectedItem="{Binding SelectedBall}"
+                      SelectionMode="Single"
+                      SelectionUnit="FullRow">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Binding="{Binding Point3D}" Header="Point" />
+                    <DataGridTextColumn Binding="{Binding Radius}" Header="Radius" />
+                </DataGrid.Columns>
+            </DataGrid>
 
-        <local:Selector3D ItemTemplate="{StaticResource Multi1515Template}"
-                          ItemsSource="{Binding Balls}"
-                          SelectedItem="{Binding SelectedBall}" />
+            <h:HelixViewport3D Grid.Column="1" ZoomExtentsWhenLoaded="True">
+                <h:SunLight />
 
-    </h:HelixViewport3D>
+                <!--  <helixPerfBox:Selector3D ItemsSource="{Binding Balls}" SelectedItem="{Binding SelectedRed}" />  -->
+
+                <local:Selector3D ItemTemplate="{StaticResource Multi1515Template}"
+                                  ItemsSource="{Binding Balls}"
+                                  SelectedItem="{Binding SelectedBall}" />
+
+            </h:HelixViewport3D>
+        </Grid>
+    </Grid>
 </UserControl>

@@ -10,8 +10,47 @@
              mc:Ignorable="d">
     <Application.Resources>
         <helixPerfBox:PointToTransformConverter x:Key="PointToTransformConverter" />
-        <helixPerfBox:RadiusToTransformConverter x:Key="RadiusoTransformConverter" />
+        <helixPerfBox:RadiusToTransformConverter x:Key="RadiusToTransformConverter" />
         <helixPerfBox:PointAndRadiusToTransformConverter x:Key="PointAndRadiusToTransformConverter" />
+
+        <DataTemplate x:Key="NumebrOfBallsTemplate" DataType="{x:Type helixPerfBox:ViewModel}">
+            <StackPanel Orientation="Horizontal">
+                <ToggleButton Width="40"
+                              Content="Clear"
+                              IsChecked="{Binding Is0}" />
+                <ToggleButton Width="40"
+                              Content="25"
+                              IsChecked="{Binding Is25}" />
+                <ToggleButton Width="40"
+                              Content="100"
+                              IsChecked="{Binding Is100}" />
+                <ToggleButton Width="40"
+                              Content="400"
+                              IsChecked="{Binding Is400}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <Style x:Key="FillBoxStyle" TargetType="{x:Type ListBox}">
+            <Setter Property="SelectedIndex" Value="0" />
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate DataType="{x:Type Brush}">
+                        <Ellipse Width="20"
+                                 Height="20"
+                                 Fill="{Binding}" />
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemsSource" Value="{Binding Brushes}" />
+        </Style>
+
         <helixPerfBox:TemplateModel x:Key="BallTemplate"
                                     DataType="{x:Type helixPerfBox:Ball}"
                                     d:DataContext="{d:DesignInstance helixPerfBox:Ball}">

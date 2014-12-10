@@ -8,21 +8,30 @@
              d:DesignHeight="300"
              d:DesignWidth="300"
              mc:Ignorable="d">
-    <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
-        <h:SunLight />
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <ListBox x:Name="FillBox" Style="{StaticResource FillBoxStyle}" />
 
-        <local:Selector3D>
-            <h:SphereVisual3D Center="1,0,-1"
-                              Fill="Red"
-                              Radius="0.1" />
-            <h:SphereVisual3D Center="2,0,-1"
-                              Fill="Green"
-                              Radius="0.1" />
-            <h:SphereVisual3D Center="3,0,-1"
-                              Fill="{Binding SelectedItem,
-                                             ElementName=FillBox}"
-                              Radius="0.1" />
-        </local:Selector3D>
-
-    </h:HelixViewport3D>
+        <h:HelixViewport3D Grid.Row="1" ZoomExtentsWhenLoaded="True">
+            <h:HelixViewport3D.Resources />
+            <h:SunLight />
+            <local:Selector3D>
+                <h:SphereVisual3D Center="1,0,0"
+                                  Fill="{Binding SelectedItem,
+                                                 ElementName=FillBox}"
+                                  Radius="0.1" />
+                <h:SphereVisual3D Center="2,0,0"
+                                  Fill="{Binding SelectedItem,
+                                                 ElementName=FillBox}"
+                                  Radius="0.1" />
+                <h:SphereVisual3D Center="3,0,0"
+                                  Fill="{Binding SelectedItem,
+                                                 ElementName=FillBox}"
+                                  Radius="0.1" />
+            </local:Selector3D>
+        </h:HelixViewport3D>
+    </Grid>
 </UserControl>
