@@ -1,3 +1,14 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="NotifyPropertyChangedInvocatorAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Indicates that the method is contained in a type that implements
+//   <see cref="System.ComponentModel.INotifyPropertyChanged" /> interface
+//   and this method is used to notify that some property value changed
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;
@@ -41,12 +52,25 @@ namespace HelixPerfBox.Annotations
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public sealed class NotifyPropertyChangedInvocatorAttribute : Attribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotifyPropertyChangedInvocatorAttribute"/> class.
+        /// </summary>
         public NotifyPropertyChangedInvocatorAttribute() { }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NotifyPropertyChangedInvocatorAttribute"/> class.
+        /// </summary>
+        /// <param name="parameterName">
+        /// The parameter name.
+        /// </param>
         public NotifyPropertyChangedInvocatorAttribute(string parameterName)
         {
             ParameterName = parameterName;
         }
 
+        /// <summary>
+        /// Gets the parameter name.
+        /// </summary>
         public string ParameterName { get; private set; }
     }
 }

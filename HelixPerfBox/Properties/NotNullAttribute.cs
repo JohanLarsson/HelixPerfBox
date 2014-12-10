@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="NotNullAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Indicates that the value of the marked element could never be <c>null</c>
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;

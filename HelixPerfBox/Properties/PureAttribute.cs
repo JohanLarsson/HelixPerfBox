@@ -1,3 +1,13 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="PureAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Indicates that a method does not make any observable state changes.
+//   The same as <c>System.Diagnostics.Contracts.PureAttribute</c>
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;

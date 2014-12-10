@@ -55,6 +55,7 @@
                 <ColumnDefinition Width="Auto" MinWidth="30" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
+
             <DataGrid AutoGenerateColumns="False"
                       ItemsSource="{Binding Balls}"
                       SelectedItem="{Binding SelectedBall}"
@@ -65,6 +66,7 @@
                     <DataGridTextColumn Binding="{Binding Radius}" Header="Radius" />
                 </DataGrid.Columns>
             </DataGrid>
+
             <TabControl Grid.Column="2">
                 <TabItem Header="ItemsControl">
                     <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
@@ -88,7 +90,7 @@
 
                         <!--  <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />  -->
 
-                        <local:Selector3D ItemTemplate="{StaticResource BallTemplate}"
+                        <local:Selector3D ItemTemplate="{StaticResource Multi1515Template}"
                                           ItemsSource="{Binding Balls}"
                                           SelectedItem="{Binding SelectedBall}" />
 

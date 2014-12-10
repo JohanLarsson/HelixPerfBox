@@ -1,3 +1,13 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AspMvcActionSelectorAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   ASP.NET MVC attribute. When applied to a parameter of an attribute,
+//   indicates that this parameter is an MVC action name
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;

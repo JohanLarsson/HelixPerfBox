@@ -1,3 +1,15 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="CannotApplyEqualityOperatorAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Indicates that the value of the marked type (or its derivatives)
+//   cannot be compared using '==' or '!=' operators and <c>Equals()</c>
+//   should be used instead. However, using '==' or '!=' for comparison
+//   with <c>null</c> is always permitted.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;

@@ -1,3 +1,13 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="BaseTypeRequiredAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   When applied to a target attribute, specifies a requirement for any type marked
+//   with the target attribute to implement or inherit specific type or types.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;
@@ -16,11 +26,20 @@ namespace HelixPerfBox.Annotations
     [BaseTypeRequired(typeof(Attribute))]
     public sealed class BaseTypeRequiredAttribute : Attribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="BaseTypeRequiredAttribute"/> class.
+        /// </summary>
+        /// <param name="baseType">
+        /// The base type.
+        /// </param>
         public BaseTypeRequiredAttribute([NotNull] Type baseType)
         {
             BaseType = baseType;
         }
 
+        /// <summary>
+        /// Gets the base type.
+        /// </summary>
         [NotNull] public Type BaseType { get; private set; }
     }
 }

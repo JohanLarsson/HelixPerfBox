@@ -1,4 +1,13 @@
-﻿namespace HelixPerfBox
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ItemContainerGenerator3D.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The item container generator 3 d.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace HelixPerfBox
 {
     using System;
     using System.Collections;
@@ -7,28 +16,63 @@
     using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Windows;
+    using System.Windows.Controls.Primitives;
     using System.Windows.Media.Media3D;
+    using System.Windows.Threading;
 
+    [Obsolete("Can be cleaned up, started implementing IItemContainerGenerator hence the API")]
+    /// <summary>
+    /// The item container generator 3 d.
+    /// </summary>
     public class ItemContainerGenerator3D
     {
+        /// <summary>
+        /// The _parent.
+        /// </summary>
         private readonly WeakReference _parent = new WeakReference(null);
+
+        /// <summary>
+        /// The _cache.
+        /// </summary>
         private readonly ConcurrentQueue<Visual3D> _cache = new ConcurrentQueue<Visual3D>();
+
+        /// <summary>
+        /// The _map.
+        /// </summary>
         private readonly ConditionalWeakTable<object, Visual3D> _map = new ConditionalWeakTable<object, Visual3D>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ItemContainerGenerator3D"/> class.
+        /// </summary>
+        /// <param name="parent">
+        /// The parent.
+        /// </param>
         public ItemContainerGenerator3D(ItemsControl3D parent)
         {
-            this._parent.Target = parent;
-            CollectionChangedEventManager.AddHandler(parent.Items, this.OnCollectionChanged);
+            _parent.Target = parent;
+            CollectionChangedEventManager.AddHandler(parent.Items, OnCollectionChanged);
         }
 
+        /// <summary>
+        /// Gets the parent.
+        /// </summary>
         public ItemsControl3D Parent
         {
             get
             {
-                return (ItemsControl3D)this._parent.Target;
+                return (ItemsControl3D)_parent.Target;
             }
         }
 
+        /// <summary>
+        /// The get container or default for item.
+        /// </summary>
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Visual3D"/>.
+        /// </returns>
         public Visual3D GetContainerOrDefaultForItem(object item)
         {
             Visual3D container;
@@ -36,9 +80,21 @@
             {
                 return null;
             }
+
             return container;
         }
 
+        /// <summary>
+        /// The get container for item.
+        /// </summary>
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Visual3D"/>.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
         public Visual3D GetContainerForItem(object item)
         {
             Visual3D container;
@@ -46,35 +102,73 @@
             {
                 throw new InvalidOperationException("Could not find container for item");
             }
+
             return container;
         }
 
+        /// <summary>
+        /// The try get container for item.
+        /// </summary>
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        /// <param name="visual">
+        /// The visual.
+        /// </param>
+        /// <returns>
+        /// The <see cref="bool"/>.
+        /// </returns>
         public bool TryGetContainerForItem(object item, out Visual3D visual)
         {
             if (!_map.TryGetValue(item, out visual))
             {
                 return false;
             }
+
             return true;
         }
 
+        /// <summary>
+        /// The refresh.
+        /// </summary>
         public virtual void Refresh()
         {
-            this.Reset(this.Parent.Items);
+            Reset(Parent.Items);
         }
 
+        /// <summary>
+        /// The reset.
+        /// </summary>
+        /// <param name="newItems">
+        /// The new items.
+        /// </param>
         protected virtual void Reset(IEnumerable newItems)
         {
             RemoveAll();
-            Add(this.Parent.Items);
+            Add(Parent.Items);
         }
 
+        /// <summary>
+        /// The generate next.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Visual3D"/>.
+        /// </returns>
         protected virtual Visual3D GenerateNext()
         {
             bool temp;
             return GenerateNext(out temp);
         }
 
+        /// <summary>
+        /// The generate next.
+        /// </summary>
+        /// <param name="isNewlyRealized">
+        /// The is newly realized.
+        /// </param>
+        /// <returns>
+        /// The <see cref="Visual3D"/>.
+        /// </returns>
         protected virtual Visual3D GenerateNext(out bool isNewlyRealized)
         {
             Visual3D visual3D;
@@ -84,25 +178,36 @@
                 visual3D = CreateNewContainer();
                 isNewlyRealized = true;
             }
+
             return visual3D;
         }
 
+        /// <summary>
+        /// The remove all.
+        /// </summary>
         protected virtual void RemoveAll()
         {
-            var start = this.Parent.Children.Count - 1;
+            var start = Parent.Children.Count - 1;
             for (int i = start; i >= 0; i--)
             {
-                var child = this.Parent.Children[i];
-                this.Remove(child);
+                var child = Parent.Children[i];
+                Remove(child);
             }
         }
 
+        /// <summary>
+        /// The remove.
+        /// </summary>
+        /// <param name="oldItems">
+        /// The old items.
+        /// </param>
         protected virtual void Remove(IEnumerable oldItems)
         {
             if (oldItems == null)
             {
                 return;
             }
+
             foreach (var remove in oldItems)
             {
                 var container = GetContainerForItem(remove);
@@ -110,33 +215,61 @@
             }
         }
 
+        /// <summary>
+        /// The remove.
+        /// </summary>
+        /// <param name="container">
+        /// The container.
+        /// </param>
         protected virtual void Remove(Visual3D container)
         {
-            this.Parent.Children.Remove(container);
-            UnlinkContainerFromItem(container, this.Parent);
+            Parent.Children.Remove(container);
+            UnlinkContainerFromItem(container, Parent);
             Recycle(container);
         }
 
+        /// <summary>
+        /// The add.
+        /// </summary>
+        /// <param name="newItems">
+        /// The new items.
+        /// </param>
         public void Add(IEnumerable newItems)
         {
             if (newItems == null)
             {
                 return;
             }
+
             foreach (var newItem in newItems)
             {
                 var container = GenerateNext();
-                LinkContainerForItem(container, newItem, this.Parent);
-                this.Parent.Children.Add(container);
-                System.Windows.Threading.Dispatcher.Yield();
+                LinkContainerForItem(container, newItem, Parent);
+                Parent.Children.Add(container);
+                Dispatcher.Yield();
             }
         }
 
+        /// <summary>
+        /// The recycle.
+        /// </summary>
+        /// <param name="visual3D">
+        /// The visual 3 d.
+        /// </param>
         protected virtual void Recycle(Visual3D visual3D)
         {
             _cache.Enqueue(visual3D);
         }
 
+        /// <summary>
+        /// The unlink container from item.
+        /// </summary>
+        /// <param name="container">
+        /// The container.
+        /// </param>
+        /// <param name="host">
+        /// The host.
+        /// </param>
         protected virtual void UnlinkContainerFromItem(Visual3D container, ItemsControl3D host)
         {
             var item = container.GetValue(ItemContainer3D.ItemProperty);
@@ -148,6 +281,18 @@
             container.SetValue(dp, null);
         }
 
+        /// <summary>
+        /// The link container for item.
+        /// </summary>
+        /// <param name="container">
+        /// The container.
+        /// </param>
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        /// <param name="host">
+        /// The host.
+        /// </param>
         protected virtual void LinkContainerForItem(Visual3D container, object item, ItemsControl3D host)
         {
             container.SetValue(ItemContainer3D.ItemProperty, item);
@@ -159,6 +304,17 @@
             container.SetValue(dp, item);
         }
 
+        /// <summary>
+        /// The on collection changed.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
         protected virtual void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
@@ -170,23 +326,28 @@
                     Remove(e.OldItems);
                     break;
                 case NotifyCollectionChangedAction.Replace:
-                    this.Remove(e.OldItems);
-                    this.Add(e.NewItems);
+                    Remove(e.OldItems);
+                    Add(e.NewItems);
                     break;
                 case NotifyCollectionChangedAction.Move:
                     return;
                 case NotifyCollectionChangedAction.Reset:
-                    this.Reset(this.Parent.Items);
+                    Reset(Parent.Items);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-
+        /// <summary>
+        /// The create new container.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Visual3D"/>.
+        /// </returns>
         protected virtual Visual3D CreateNewContainer()
         {
-            return this.Parent.ItemTemplate.Create();
+            return Parent.ItemTemplate.Create();
         }
     }
 }

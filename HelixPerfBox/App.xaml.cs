@@ -1,4 +1,15 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="App.xaml.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Interaction logic for App.xaml
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+
+
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;

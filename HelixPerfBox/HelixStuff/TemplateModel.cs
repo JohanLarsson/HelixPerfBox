@@ -1,4 +1,13 @@
-﻿namespace HelixPerfBox
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="TemplateModel.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   The template model.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace HelixPerfBox
 {
     using System;
     using System.Collections.Generic;
@@ -10,26 +19,65 @@
     using System.Windows.Markup;
     using System.Windows.Media.Media3D;
 
+    /// <summary>
+    /// The template model.
+    /// </summary>
     [DictionaryKeyProperty("DataTemplateKey")]
     [ContentProperty("Model")]
     [Localizability(LocalizationCategory.NeverLocalize)] // All properties on template are not localizable
     public class TemplateModel : Freezable, INameScope
     {
+        /// <summary>
+        /// The _data type.
+        /// </summary>
         private Type _dataType;
+
+        /// <summary>
+        /// The _data type properties.
+        /// </summary>
         private PropertyInfo[] _dataTypeProperties;
+
+        /// <summary>
+        /// The _model.
+        /// </summary>
         private ModelVisual3D _model;
+
+        /// <summary>
+        /// The _dependency properties.
+        /// </summary>
         private IEnumerable<DependencyProperty> _dependencyProperties;
+
+        /// <summary>
+        /// The _bindings.
+        /// </summary>
         private IEnumerable<Binding> _bindings;
+
+        /// <summary>
+        /// The _binding expressions.
+        /// </summary>
         private IEnumerable<BindingExpressionBase> _bindingExpressions;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateModel"/> class.
+        /// </summary>
         public TemplateModel()
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TemplateModel"/> class.
+        /// </summary>
+        /// <param name="dataType">
+        /// The data type.
+        /// </param>
         public TemplateModel(object dataType)
         {
             DataType = dataType;
         }
 
+        /// <summary>
+        /// Gets or sets the data type.
+        /// </summary>
         [DefaultValue(null)]
         public object DataType
         {
@@ -65,6 +113,7 @@
                 VerifyAccess();
                 return _model;
             }
+
             set
             {
                 VerifyAccess();
@@ -77,11 +126,20 @@
             }
         }
 
+        /// <summary>
+        /// Gets the bindings.
+        /// </summary>
         public IEnumerable<Binding> Bindings
         {
             get { return _bindings; }
         }
 
+        /// <summary>
+        /// The create.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="ModelVisual3D"/>.
+        /// </returns>
         public ModelVisual3D Create()
         {
             var clone = Model.Content.CloneCurrentValue();
@@ -93,12 +151,23 @@
                 {
                     continue;
                 }
+
                 var value = Model.GetValue(dependencyProperty);
                 visual3D.SetCurrentValue(dependencyProperty, value);
             }
+
             return visual3D;
         }
 
+        /// <summary>
+        /// The set bindings.
+        /// </summary>
+        /// <param name="visual3D">
+        /// The visual 3 d.
+        /// </param>
+        /// <param name="source">
+        /// The source.
+        /// </param>
         public void SetBindings(Visual3D visual3D, object source)
         {
             visual3D.SetBindings(_bindingExpressions, source);
@@ -106,13 +175,20 @@
 
         #region INameScope
 
+        /// <summary>
+        /// The _name scope.
+        /// </summary>
         private readonly NameScope _nameScope = new NameScope();
 
         /// <summary>
         /// Registers the name - Context combination
         /// </summary>
-        /// <param name="name">Name to register</param>
-        /// <param name="scopedElement">Element where name is defined</param>
+        /// <param name="name">
+        /// Name to register
+        /// </param>
+        /// <param name="scopedElement">
+        /// Element where name is defined
+        /// </param>
         public void RegisterName(string name, object scopedElement)
         {
             VerifyAccess();
@@ -122,7 +198,9 @@
         /// <summary>
         /// Unregisters the name - element combination
         /// </summary>
-        /// <param name="name">Name of the element</param>
+        /// <param name="name">
+        /// Name of the element
+        /// </param>
         public void UnregisterName(string name)
         {
             VerifyAccess();
@@ -132,7 +210,12 @@
         /// <summary>
         /// Find the element given name
         /// </summary>
-        /// <param name="name">Name of the element</param>
+        /// <param name="name">
+        /// Name of the element
+        /// </param>
+        /// <returns>
+        /// The <see cref="object"/>.
+        /// </returns>
         object INameScope.FindName(string name)
         {
             VerifyAccess();
@@ -141,6 +224,11 @@
 
         #endregion INameScope
 
+        /// <summary>
+        /// The check sealed.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">
+        /// </exception>
         internal void CheckSealed()
         {
             if (IsSealed)
@@ -149,17 +237,29 @@
             }
         }
 
+        /// <summary>
+        /// The create instance core.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Freezable"/>.
+        /// </returns>
         protected override Freezable CreateInstanceCore()
         {
             return new TemplateModel(_dataType);
         }
 
+        /// <summary>
+        /// The verify bindings.
+        /// </summary>
+        /// <exception cref="ArgumentException">
+        /// </exception>
         private void VerifyBindings()
         {
             if (_bindingExpressions == null)
             {
                 return;
             }
+
             foreach (var expression in _bindingExpressions)
             {
                 var binding = expression.ParentBindingBase;
@@ -168,11 +268,13 @@
                 {
                     continue;
                 }
+
                 var propertyPath = (PropertyPath)   binding.GetValueOrDefault(BindingHelper.Path);
                 if (propertyPath == null)
                 {
                     continue;
                 }
+
                 if (_dataTypeProperties.All(x => x.Name != propertyPath.Path))
                 {
                     throw new ArgumentException(string.Format("Trying to bind to {0}.{1}", _dataType.Name, propertyPath.Path));

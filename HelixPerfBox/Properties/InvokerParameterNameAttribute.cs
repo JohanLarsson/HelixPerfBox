@@ -1,3 +1,14 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="InvokerParameterNameAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Indicates that the function argument should be string literal and match one
+//   of the parameters of the caller function. For example, ReSharper annotates
+//   the parameter of <see cref="System.ArgumentNullException" />
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;

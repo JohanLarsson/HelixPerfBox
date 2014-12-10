@@ -1,3 +1,14 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ImplicitUseTargetFlags.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Specify what is considered used implicitly
+//   when marked with <see cref="MeansImplicitUseAttribute" />
+//   or <see cref="UsedImplicitlyAttribute" />
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;
@@ -10,10 +21,19 @@ namespace HelixPerfBox.Annotations
     [Flags]
     public enum ImplicitUseTargetFlags
     {
-        Default = Itself,
-        Itself = 1,
+        /// <summary>
+        /// The default.
+        /// </summary>
+        Default = Itself, 
+
+        /// <summary>
+        /// The itself.
+        /// </summary>
+        Itself = 1, 
+
         /// <summary>Members of entity marked with attribute are considered used</summary>
-        Members = 2,
+        Members = 2, 
+
         /// <summary>Entity marked with attribute and all its members considered used</summary>
         WithMembers = Itself | Members
     }

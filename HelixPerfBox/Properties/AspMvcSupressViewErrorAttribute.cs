@@ -1,3 +1,13 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="AspMvcSupressViewErrorAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   ASP.NET MVC attribute. Allows disabling all inspections
+//   for MVC views within a class or a method.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;

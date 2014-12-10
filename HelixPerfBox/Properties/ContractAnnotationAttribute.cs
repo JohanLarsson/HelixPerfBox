@@ -1,3 +1,12 @@
+// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ContractAnnotationAttribute.cs" company="">
+//   
+// </copyright>
+// <summary>
+//   Describes dependency between method input and output
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
 namespace HelixPerfBox.Annotations
 {
     using System;
@@ -47,16 +56,38 @@ namespace HelixPerfBox.Annotations
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = true)]
     public sealed class ContractAnnotationAttribute : Attribute
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContractAnnotationAttribute"/> class.
+        /// </summary>
+        /// <param name="contract">
+        /// The contract.
+        /// </param>
         public ContractAnnotationAttribute([NotNull] string contract)
             : this(contract, false) { }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContractAnnotationAttribute"/> class.
+        /// </summary>
+        /// <param name="contract">
+        /// The contract.
+        /// </param>
+        /// <param name="forceFullStates">
+        /// The force full states.
+        /// </param>
         public ContractAnnotationAttribute([NotNull] string contract, bool forceFullStates)
         {
             Contract = contract;
             ForceFullStates = forceFullStates;
         }
 
+        /// <summary>
+        /// Gets the contract.
+        /// </summary>
         public string Contract { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether force full states.
+        /// </summary>
         public bool ForceFullStates { get; private set; }
     }
 }
