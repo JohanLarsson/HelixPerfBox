@@ -3,6 +3,7 @@
     using System.ComponentModel;
     using System.Runtime.CompilerServices;
     using System.Windows;
+    using System.Windows.Data;
 
     using HelixPerfBox;
     using HelixPerfBox.Annotations;
@@ -11,19 +12,19 @@
 
     public class Sandbox
     {
-        [Test, Explicit("This hangs dunno why")]
+        [Test, RequiresSTA]
         public void DataContext()
         {
             var freezableDummy = new FreezableDummy();
-            //var binding = new Binding("Name");
-            //var bindingExpressionBase = BindingOperations.SetBinding(freezableDummy, FreezableDummy.ValueProperty, binding);
-            //Assert.AreEqual(null, freezableDummy.Value);
+            var binding = new Binding("Name");
+            var bindingExpressionBase = BindingOperations.SetBinding(freezableDummy, FreezableDummy.ValueProperty, binding);
+            Assert.AreEqual(null, freezableDummy.Value);
 
             var vm = new DummyVm { Name = "Test" };
             freezableDummy.SetDataContextProxy(vm);
-            //Assert.AreEqual(vm, freezableDummy.GetValue(FrameworkElement.DataContextProperty));
-            //bindingExpressionBase.UpdateTarget();
-            //Assert.AreEqual("Test", freezableDummy.Value);
+            Assert.AreEqual(vm, freezableDummy.GetDataContextProxy());
+            bindingExpressionBase.UpdateTarget();
+            Assert.AreEqual("Test", freezableDummy.Value);
         }
     }
 
@@ -42,6 +43,9 @@
                 SetValue(ValueProperty, value);
             }
         }
+
+
+
         protected override Freezable CreateInstanceCore()
         {
             return new FreezableDummy();

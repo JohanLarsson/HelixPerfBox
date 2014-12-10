@@ -5,7 +5,7 @@
 
     public static class FreezableExt
     {
-        private static readonly MethodInfo AddInheritanceContextMethod = typeof(Freezable).GetMethod("AddInheritanceContext", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);       
+        private static readonly MethodInfo AddInheritanceContextMethod = typeof(Freezable).GetMethod("AddInheritanceContext", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
         private static readonly MethodInfo RemoveInheritanceContextMethod = typeof(Freezable).GetMethod("RemoveInheritanceContext", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
 
         public static readonly DependencyProperty DataContextProxyProperty = DependencyProperty.RegisterAttached(
@@ -16,12 +16,18 @@
 
         public static void SetDataContextProxy(this Freezable element, object value)
         {
-            element.SetValue(DataContextProxyProperty, value);
+            var proxy = new DataContextProxy { DataContext = value };
+            element.SetValue(DataContextProxyProperty, proxy);
         }
 
         public static object GetDataContextProxy(this Freezable element)
         {
-            return (object)element.GetValue(DataContextProxyProperty);
+            var proxy = (DataContextProxy)element.GetValue(DataContextProxyProperty);
+            if (proxy == null)
+            {
+                return null;
+            }
+            return proxy.DataContext;
         }
 
         /// <summary>
@@ -46,10 +52,23 @@
             RemoveInheritanceContextMethod.Invoke(self, new object[] { context, property });
         }
 
-        private static void OnDataContextChanged(DependencyObject o, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+        private static void OnDataContextChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var freezable = (Freezable)o;
-            freezable.AddInheritanceContextWithReflection(o, DataContextProxyProperty);
+            var oldProxy = e.OldValue as DataContextProxy;
+            if (oldProxy != null)
+            {
+                freezable.RemoveInheritanceContextWithReflection(oldProxy, FrameworkElement.DataContextProperty); 
+            }
+            var newProxy  = e.NewValue as DataContextProxy;
+            if (newProxy != null)
+            {
+                freezable.AddInheritanceContextWithReflection(newProxy, FrameworkElement.DataContextProperty);
+            }
+        }
+
+        private class DataContextProxy : FrameworkElement
+        {
         }
     }
 }
