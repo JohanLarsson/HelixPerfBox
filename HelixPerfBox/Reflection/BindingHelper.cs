@@ -9,7 +9,6 @@
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Data;
-    using Gu.Reactive;
 
     internal static class BindingHelper
     {
@@ -208,6 +207,21 @@
         {
             var invoke = GetSourceItemMethod.Invoke(self, new[] { newValue });
             return invoke;
+        }
+    }
+
+    internal class NameOf
+    {
+        public static string Property<TSource, TProp>(Expression<Func<TSource, TProp>> prop)
+        {
+            var memberExpression = (MemberExpression) prop.Body;
+            return memberExpression.Member.Name;
+        }
+
+        public static string Property(Expression<Func<object>> prop)
+        {
+            var memberExpression = (MemberExpression)prop.Body;
+            return memberExpression.Member.Name;
         }
     }
 }

@@ -66,11 +66,10 @@
                         Visual3DModel = modelVisual3D.Content;
                     }
                 }
-
             }
         }
 
-        public Selector3D Parent { get { return (Selector3D)_parent.Target; } }
+        public Selector3D Parent { get { return _parent.Target as Selector3D; } }
 
         public bool IsSelected
         {
@@ -87,7 +86,7 @@
         protected override void OnVisualParentChanged(DependencyObject oldParent)
         {
             base.OnVisualParentChanged(oldParent);
-            var parent = (Selector3D)VisualTreeHelper.GetParent(this);
+            var parent = VisualTreeHelper.GetParent(this) as Selector3D;
             _parent.Target = parent;
             if (parent == null)
             {

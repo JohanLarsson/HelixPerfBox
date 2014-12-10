@@ -4,14 +4,9 @@
     using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.Linq.Expressions;
-    using System.Reactive.Linq;
     using System.Runtime.CompilerServices;
     using System.Windows.Media.Media3D;
     using Annotations;
-    using Gu.Reactive;
-    using System.Reactive;
-
-    using Gu.Wpf.Reactive;
 
     public class ViewModel : INotifyPropertyChanged
     {
@@ -24,19 +19,8 @@
 
         public ViewModel()
         {
-            Observable.Merge(this.ToObservable(x => x.IsBallsVisible), this.ToObservable(x => x.Side))
-                      .Subscribe(
-                          x =>
-                          {
-                              if (IsBallsVisible)
-                              {
-                                  CreateBalls(Side);
-                              }
-                              else
-                              {
-                                  _balls.Clear();
-                              }
-                          });
+            PropertyChangedEventManager.AddHandler(this, (_, __) => CreateBalls(Side), "Side");
+            CreateBalls(5);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
