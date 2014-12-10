@@ -5,6 +5,7 @@
         xmlns:h="http://helix-toolkit.org/wpf"
         xmlns:local="clr-namespace:HelixPerfBox"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=System"
         Title="MainWindow"
         Width="525"
         Height="350"
@@ -75,7 +76,7 @@
 
                         <!--  <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource ConverterTemplate}" ItemsSource="{Binding BlueBalls}" />  -->
 
-                        <local:ItemsControl3D ItemTemplate="{StaticResource MultiBindingTemplate}" ItemsSource="{Binding Balls}" />
+                        <local:ItemsControl3D ItemTemplate="{StaticResource Multi1515Template}" ItemsSource="{Binding Balls}" />
 
                         <!--  <h:SphereVisual3D x:Name="SphereVisual3D" Fill="HotPink" Radius="2"/>  -->
                     </h:HelixViewport3D>
@@ -87,7 +88,7 @@
 
                         <!--  <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />  -->
 
-                        <local:Selector3D ItemTemplate="{StaticResource MultiBindingTemplate}"
+                        <local:Selector3D ItemTemplate="{StaticResource BallTemplate}"
                                           ItemsSource="{Binding Balls}"
                                           SelectedItem="{Binding SelectedBall}" />
 

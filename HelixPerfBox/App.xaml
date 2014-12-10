@@ -58,5 +58,22 @@
                 </h:SphereVisual3D.Transform>
             </h:SphereVisual3D>
         </helixPerfBox:TemplateModel>
+
+
+        <helixPerfBox:TemplateModel x:Key="Multi1515Template"
+                                    DataType="{x:Type helixPerfBox:Ball}"
+                                    d:DataContext="{d:DesignInstance helixPerfBox:Ball}">
+            <h:SphereVisual3D Fill="{Binding SelectedItem,
+                                             ElementName=FillBox}"
+                              PhiDiv="15"
+                              ThetaDiv="15">
+                <h:SphereVisual3D.Transform>
+                    <MultiBinding Converter="{StaticResource PointAndRadiusToTransformConverter}">
+                        <Binding Path="Point3D" />
+                        <Binding Path="Radius" />
+                    </MultiBinding>
+                </h:SphereVisual3D.Transform>
+            </h:SphereVisual3D>
+        </helixPerfBox:TemplateModel>
     </Application.Resources>
 </Application>

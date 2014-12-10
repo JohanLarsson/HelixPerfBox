@@ -69,6 +69,7 @@
     <Compile Include="Reflection\BindingHelper.cs" />
     <Compile Include="HelixStuff\UIElementItemContainer3D.cs" />
     <Compile Include="HelixStuff\ItemCollection3D.cs" />
+    <Compile Include="Reflection\FreezableExt.cs" />
     <Compile Include="Reflection\Helper.cs" />
     <Compile Include="Reflection\ItemsCollectionExt.cs" />
     <Compile Include="HelixStuff\ItemsControl3D.cs" />
