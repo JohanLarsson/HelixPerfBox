@@ -29,14 +29,33 @@
             }
         }
 
+        public Visual3D GetContainerOrDefaultForItem(object item)
+        {
+            Visual3D container;
+            if (!TryGetContainerForItem(item, out container))
+            {
+                return null;
+            }
+            return container;
+        }
+
         public Visual3D GetContainerForItem(object item)
         {
             Visual3D container;
-            if (!_map.TryGetValue(item, out container))
+            if (!TryGetContainerForItem(item, out container))
             {
                 throw new InvalidOperationException("Could not find container for item");
             }
             return container;
+        }
+
+        public bool TryGetContainerForItem(object item, out Visual3D visual)
+        {
+            if (!_map.TryGetValue(item, out visual))
+            {
+                return false;
+            }
+            return true;
         }
 
         public virtual void Refresh()

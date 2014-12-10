@@ -218,7 +218,7 @@
             return memberExpression.Member.Name;
         }
 
-        public static string Property(Expression<Func<object>> prop)
+        public static string Property<T>(Expression<Func<T>> prop)
         {
             var memberExpression = (MemberExpression)prop.Body;
             return memberExpression.Member.Name;

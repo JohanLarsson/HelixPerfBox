@@ -99,7 +99,8 @@
                         <h:SunLight />
                         <local:UIElementItemContainer3D>
                             <h:SphereVisual3D Center="0,0,0"
-                                              Material="{Binding SelectedItem,ElementName=FillBox}"
+                                              Material="{Binding SelectedItem,
+                                                                 ElementName=FillBox}"
                                               Radius="1" />
                         </local:UIElementItemContainer3D>
                     </h:HelixViewport3D>

@@ -115,7 +115,7 @@
         /// Calls nameof internally
         /// </summary>
         /// <param name="propety"></param>
-        protected virtual void OnPropertyChanged(Expression<Func<object>> propety)
+        protected virtual void OnPropertyChanged<T>(Expression<Func<T>> propety)
         {
             var handler = PropertyChanged;
             if (handler != null)
