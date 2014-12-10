@@ -11,6 +11,9 @@ namespace HelixPerfBox
 {
     using System.Windows;
     using System.Windows.Media;
+    using System.Windows.Media.Media3D;
+
+    using HelixToolkit.Wpf;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -30,6 +33,14 @@ namespace HelixPerfBox
             FillBox.Items.Add(Brushes.Red);
             FillBox.Items.Add(Brushes.Blue);
             FillBox.Items.Add(Brushes.HotPink);
+
+            //var sphereVisual3D = new SphereVisual3D { Radius = 0.5, Fill = Brushes.Yellow, Center = new Point3D(1, 1, 0) };
+            //var container = new ContainerUIElement3D();
+            //container.Children.Add(sphereVisual3D);
+            //SandboxViewPort.Children.Add(container);
+            //var visual3D = new SphereVisual3D { Radius = 0.5, Fill = Brushes.RosyBrown, Center = new Point3D(-1, 1, 0) };
+            //var container3D = new UIElementItemContainer3D(visual3D);
+            //SandboxViewPort.Children.Add(container3D);
         }
 
         /// <summary>
@@ -43,6 +54,8 @@ namespace HelixPerfBox
         /// </param>
         private void OnZoomExtentsClick(object sender, RoutedEventArgs e)
         {
+            SandboxViewPort.ZoomExtents(300);
+            
             // Viewport3D.ZoomExtents(300);
         }
     }

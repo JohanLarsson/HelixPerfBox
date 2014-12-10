@@ -10,6 +10,7 @@
 namespace HelixPerfBox
 {
     using System;
+    using System.ComponentModel;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Input;
@@ -30,18 +31,24 @@ namespace HelixPerfBox
         /// The is selected property.
         /// </summary>
         public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(
-            "IsSelected", 
-            typeof(bool), 
-            typeof(UIElementItemContainer3D), 
+            "IsSelected",
+            typeof(bool),
+            typeof(UIElementItemContainer3D),
             new PropertyMetadata(default(bool), OnIsSelectedChanged));
+
+        public static readonly DependencyProperty DataContextProperty = FrameworkElement.DataContextProperty.AddOwner(
+            typeof(UIElementItemContainer3D),
+            new FrameworkPropertyMetadata(
+                null, FrameworkPropertyMetadataOptions.Inherits,
+                OnDataContextChanged));
 
         /// <summary>
         /// The original material property.
         /// </summary>
         private static readonly DependencyProperty OriginalMaterialProperty = DependencyProperty.Register(
-            "OriginalMaterial", 
-            typeof(Material), 
-            typeof(UIElementItemContainer3D), 
+            "OriginalMaterial",
+            typeof(Material),
+            typeof(UIElementItemContainer3D),
             new PropertyMetadata(Materials.Brown));
 
         /// <summary>
@@ -74,10 +81,21 @@ namespace HelixPerfBox
         /// The child.
         /// </param>
         public UIElementItemContainer3D(Visual3D child)
+            : this()
         {
             Child = child;
+        }
 
-            // Visual3DModel = ((ModelVisual3D)child).Content;
+        public object DataContext
+        {
+            get
+            {
+                return (object)GetValue(DataContextProperty);
+            }
+            set
+            {
+                SetValue(DataContextProperty, value);
+            }
         }
 
         /// <summary>
@@ -103,11 +121,11 @@ namespace HelixPerfBox
                 if (_child != null)
                 {
                     AddVisual3DChild(_child);
-                    var modelVisual3D = _child as ModelVisual3D;
-                    if (modelVisual3D != null)
-                    {
-                        Visual3DModel = modelVisual3D.Content;
-                    }
+                    //var modelVisual3D = _child as ModelVisual3D;
+                    //if (modelVisual3D != null)
+                    //{
+                    //    Visual3DModel = modelVisual3D.Content;
+                    //}
                 }
             }
         }
@@ -167,7 +185,7 @@ namespace HelixPerfBox
         /// </param>
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed && Parent != null)
+            if (e.LeftButton == MouseButtonState.Pressed)
             {
                 IsSelected = true;
             }
@@ -215,34 +233,42 @@ namespace HelixPerfBox
         /// </param>
         protected virtual void OnIsSelectedChanged(DependencyPropertyChangedEventArgs e)
         {
-            var model3D = Visual3DModel as GeometryModel3D;
-            if (model3D == null)
+            var modelVisual3D = Child as ModelVisual3D;
+            if (modelVisual3D == null)
             {
                 return;
             }
-
+            var geometryModel3D = modelVisual3D.Content as GeometryModel3D;
+            if (geometryModel3D == null)
+            {
+                return;
+            }
+            var parent = Parent;
             if (IsSelected)
             {
-                Parent.SelectedItem = Item;
-                model3D.SetCurrentValue(OriginalMaterialProperty, model3D.Material);
-                model3D.SetCurrentValue(GeometryModel3D.MaterialProperty, Materials.Orange);
+                if (parent != null)
+                {
+                    parent.SelectedItem = Item;
+                }
+                geometryModel3D.SetCurrentValue(OriginalMaterialProperty, geometryModel3D.Material);
+                geometryModel3D.SetCurrentValue(GeometryModel3D.MaterialProperty, Materials.Orange);
             }
             else
             {
-                if (Parent.SelectedItem == Item)
+                if (parent != null && parent.SelectedItem == Item)
                 {
-                    Parent.SelectedItem = null;
+                    parent.SelectedItem = null;
                 }
 
-                var binding = BindingOperations.GetBindingExpressionBase(model3D, GeometryModel3D.MaterialProperty);
+                var binding = BindingOperations.GetBindingExpressionBase(geometryModel3D, GeometryModel3D.MaterialProperty);
                 if (binding != null)
                 {
                     binding.UpdateTarget();
                 }
                 else
                 {
-                    var reset = model3D.GetValue(OriginalMaterialProperty);
-                    model3D.SetCurrentValue(GeometryModel3D.MaterialProperty, reset);
+                    var reset = geometryModel3D.GetValue(OriginalMaterialProperty);
+                    geometryModel3D.SetCurrentValue(GeometryModel3D.MaterialProperty, reset);
                 }
             }
         }
@@ -260,6 +286,10 @@ namespace HelixPerfBox
         {
             var container3D = (UIElementItemContainer3D)o;
             container3D.OnIsSelectedChanged(e);
+        }
+
+        private static void OnDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
         }
     }
 }

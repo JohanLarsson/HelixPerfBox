@@ -11,32 +11,37 @@ namespace HelixPerfBox
 {
     using System.Collections;
     using System.Collections.Specialized;
+    using System.ComponentModel;
     using System.Windows;
     using System.Windows.Controls;
+    using System.Windows.Markup;
     using System.Windows.Media.Media3D;
 
     /// <summary>
     /// The items control 3 d.
     /// </summary>
+    [ContentProperty("Items")]
+    [DefaultEvent("OnItemsChanged")]
+    [DefaultProperty("Items")]
     public class ItemsControl3D : ModelVisual3D
     {
         /// <summary>
         /// The items source property.
         /// </summary>
         public static readonly DependencyProperty ItemsSourceProperty = ItemsControl.ItemsSourceProperty.AddOwner(
-            typeof(ItemsControl3D), 
+            typeof(ItemsControl3D),
             new FrameworkPropertyMetadata(
-                null, 
-                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure, 
+                null,
+                FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.AffectsMeasure,
                 OnItemsSourceChanged));
 
         /// <summary>
         /// The has items property key.
         /// </summary>
         internal static readonly DependencyPropertyKey HasItemsPropertyKey = DependencyProperty.RegisterReadOnly(
-            "HasItems", 
-            typeof(bool), 
-            typeof(ItemsControl3D), 
+            "HasItems",
+            typeof(bool),
+            typeof(ItemsControl3D),
             new PropertyMetadata(false));
 
         /// <summary>
@@ -48,9 +53,9 @@ namespace HelixPerfBox
         /// The item template property.
         /// </summary>
         public static readonly DependencyProperty ItemTemplateProperty = DependencyProperty.Register(
-            "ItemTemplate", 
-            typeof(TemplateModel), 
-            typeof(ItemsControl3D), 
+            "ItemTemplate",
+            typeof(TemplateModel),
+            typeof(ItemsControl3D),
             new PropertyMetadata(default(TemplateModel), OnItemTemplateChanged));
 
         /// <summary>

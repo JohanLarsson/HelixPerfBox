@@ -1,0 +1,25 @@
+﻿<UserControl x:Class="HelixPerfBox.ItemsControlItemsSource"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:h="http://helix-toolkit.org/wpf"
+             xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance helixPerfBox:ViewModel}"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             mc:Ignorable="d">
+    <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
+        <h:HelixViewport3D.Resources />
+        <h:SunLight />
+
+        <!--
+            <local:ItemsControl3D ItemTemplate="{StaticResource BallTemplate}" ItemsSource="{Binding Balls}" />
+            
+            <local:ItemsControl3D ItemTemplate="{StaticResource ElementNameTemplate}" ItemsSource="{Binding Balls}" />
+            
+            <local:ItemsControl3D ItemTemplate="{StaticResource ConverterTemplate}" ItemsSource="{Binding Balls}" />
+        -->
+        <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource Multi1515Template}" ItemsSource="{Binding Balls}" />
+    </h:HelixViewport3D>
+</UserControl>

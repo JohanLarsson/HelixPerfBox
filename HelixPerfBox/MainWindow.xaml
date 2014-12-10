@@ -68,44 +68,40 @@
             </DataGrid>
 
             <TabControl Grid.Column="2">
-                <TabItem Header="ItemsControl">
-                    <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
-                        <h:HelixViewport3D.Resources />
-                        <h:SunLight />
-                        <!--  <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource BallTemplate}" ItemsSource="{Binding BlueBalls}" />  -->
 
-                        <!--  <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource ElementNameTemplate}" ItemsSource="{Binding BlueBalls}" />  -->
-
-                        <!--  <helixPerfBox:ItemsControl3D ItemTemplate="{StaticResource ConverterTemplate}" ItemsSource="{Binding BlueBalls}" />  -->
-
-                        <local:ItemsControl3D ItemTemplate="{StaticResource Multi1515Template}" ItemsSource="{Binding Balls}" />
-
-                        <!--  <h:SphereVisual3D x:Name="SphereVisual3D" Fill="HotPink" Radius="2"/>  -->
-                    </h:HelixViewport3D>
+                <TabItem Header="ItemsControlItemsSource">
+                    <local:ItemsControlItemsSource />
                 </TabItem>
 
-                <TabItem Header="Selector">
-                    <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
-                        <h:SunLight />
+                <TabItem Header="ItemsControl xaml">
+                    <local:ItemsControlXaml />
+                </TabItem>
 
-                        <!--  <helixPerfBox:Selector3D ItemsSource="{Binding RedBalls}" SelectedItem="{Binding SelectedRed}" />  -->
+                <TabItem Header="SelectorItemsSource">
+                    <local:SelectorItemsSource />
+                </TabItem>
 
-                        <local:Selector3D ItemTemplate="{StaticResource Multi1515Template}"
-                                          ItemsSource="{Binding Balls}"
-                                          SelectedItem="{Binding SelectedBall}" />
-
-                    </h:HelixViewport3D>
+                <TabItem Header="SelectorXaml">
+                    <local:SelectorXaml />
                 </TabItem>
 
                 <TabItem Header="Sandbox">
-                    <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
+                    <h:HelixViewport3D x:Name="SandboxViewPort" ZoomExtentsWhenLoaded="True">
                         <h:SunLight />
-                        <local:UIElementItemContainer3D>
+                        <!--
+                            <local:UIElementItemContainer3D>
                             <h:SphereVisual3D Center="0,0,0"
-                                              Material="{Binding SelectedItem,
-                                                                 ElementName=FillBox}"
-                                              Radius="1" />
-                        </local:UIElementItemContainer3D>
+                            Fill="Blue"
+                            Radius="0.1" />
+                            </local:UIElementItemContainer3D>
+                            
+                            <ContainerUIElement3D>
+                            <h:SphereVisual3D Center="1,0,0"
+                            Fill="Red"
+                            Radius="0.1" />
+                            </ContainerUIElement3D>
+                        -->
+
                     </h:HelixViewport3D>
                 </TabItem>
             </TabControl>

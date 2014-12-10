@@ -54,6 +54,8 @@ namespace HelixPerfBox
         /// </summary>
         public const string Bindings_ = "Bindings";
 
+        public static readonly object DisconnectedItem = typeof(BindingExpressionBase).GetField("DisconnectedItem", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+
         /// <summary>
         /// The get source item method.
         /// </summary>

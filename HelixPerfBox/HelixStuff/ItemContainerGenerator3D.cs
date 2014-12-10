@@ -234,7 +234,7 @@ namespace HelixPerfBox
         /// <param name="newItems">
         /// The new items.
         /// </param>
-        public void Add(IEnumerable newItems)
+        protected virtual void Add(IEnumerable newItems)
         {
             if (newItems == null)
             {
@@ -274,11 +274,10 @@ namespace HelixPerfBox
         {
             var item = container.GetValue(ItemContainer3D.ItemProperty);
             container.ClearValue(ItemContainer3D.ItemProperty);
+            //container.ClearValue(FreezableExt.DataContextProxyProperty);
             if (container == item)
                 return;
             _map.Remove(item);
-            DependencyProperty dp = FrameworkElement.DataContextProperty;
-            container.SetValue(dp, null);
         }
 
         /// <summary>
@@ -295,13 +294,13 @@ namespace HelixPerfBox
         /// </param>
         protected virtual void LinkContainerForItem(Visual3D container, object item, ItemsControl3D host)
         {
-            container.SetValue(ItemContainer3D.ItemProperty, item);
             if (container == item)
                 return;
             _map.Add(item, container);
+            container.SetValue(ItemContainer3D.ItemProperty, item);
             host.ItemTemplate.SetBindings(container, item);
-            DependencyProperty dp = FrameworkElement.DataContextProperty;
-            container.SetValue(dp, item);
+            //container.SetValue(FrameworkElement.DataContextProperty, item);
+            //container.SetValue(FreezableExt.DataContextProxyProperty, item);
         }
 
         /// <summary>

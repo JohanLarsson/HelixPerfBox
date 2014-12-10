@@ -12,6 +12,8 @@ namespace HelixPerfBox
     using System.Reflection;
     using System.Windows;
 
+    using HelixToolkit.Wpf;
+
     /// <summary>
     /// The freezable ext.
     /// </summary>
@@ -48,6 +50,7 @@ namespace HelixPerfBox
         public static void SetDataContextProxy(this Freezable element, object value)
         {
             var proxy = new DataContextProxy { DataContext = value }; // Must use a proxy here. If it is set on the Freezable the framework will SO when AddInheritanceContext is called.
+            proxy.AddLogicalChild(element);
             element.SetValue(DataContextProxyProperty, proxy);
         }
 
@@ -118,7 +121,11 @@ namespace HelixPerfBox
         /// </param>
         private static void OnDataContextChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            var freezable = (Freezable)o;
+            var freezable = o as Freezable;
+            if (freezable == null)
+            {
+                return;
+            }
             var oldProxy = e.OldValue as DataContextProxy;
             if (oldProxy != null)
             {
@@ -131,12 +138,7 @@ namespace HelixPerfBox
                 freezable.AddInheritanceContextWithReflection(newProxy, FrameworkElement.DataContextProperty);
             }
         }
+        
 
-        /// <summary>
-        /// The data context proxy.
-        /// </summary>
-        private class DataContextProxy : FrameworkElement
-        {
-        }
     }
 }

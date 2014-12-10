@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="HelixPerfBox.ItemsControlXaml"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:h="http://helix-toolkit.org/wpf"
+             xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             mc:Ignorable="d">
+    <Grid>
+        <h:HelixViewport3D ZoomExtentsWhenLoaded="True">
+            <h:HelixViewport3D.Resources />
+            <h:SunLight />
+            <helixPerfBox:ItemsControl3D>
+                <h:SphereVisual3D Center="1,0,-1"
+                                  Fill="{Binding SelectedItem,
+                                                 ElementName=FillBox}"
+                                  Radius="0.1" />
+                <h:SphereVisual3D Center="2,0,-1"
+                                  Fill="{Binding SelectedItem,
+                                                 ElementName=FillBox}"
+                                  Radius="0.1" />
+                <h:SphereVisual3D Center="3,0,-1"
+                                  Fill="{Binding SelectedItem,
+                                                 ElementName=FillBox}"
+                                  Radius="0.1" />
+            </helixPerfBox:ItemsControl3D>
+
+        </h:HelixViewport3D>
+    </Grid>
+</UserControl>

@@ -9,15 +9,12 @@
 
 namespace HelixPerfBox
 {
-    using System;
     using System.Windows;
     using System.Windows.Controls.Primitives;
-    using System.Windows.Markup;
 
     /// <summary>
     /// The selector 3 d.
     /// </summary>
-    [ContentProperty("Children")]
     public class Selector3D : ItemsControl3D
     {
         /// <summary>
@@ -25,7 +22,9 @@ namespace HelixPerfBox
         /// </summary>
         public static readonly DependencyProperty SelectedItemProperty = Selector.SelectedItemProperty.AddOwner(
             typeof(Selector3D), 
-            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemChanged));
+            new FrameworkPropertyMetadata(
+                null, 
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedItemChanged));
 
         /// <summary>
         /// Gets or sets the selected item.

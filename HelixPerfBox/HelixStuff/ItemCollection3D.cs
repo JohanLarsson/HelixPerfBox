@@ -6,7 +6,6 @@
 //   The item collection 3 d.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-
 namespace HelixPerfBox
 {
     using System;
@@ -16,13 +15,12 @@ namespace HelixPerfBox
     using System.ComponentModel;
     using System.Globalization;
     using System.Linq;
-    using System.Windows;
     using System.Windows.Data;
 
     /// <summary>
     /// The item collection 3 d.
     /// </summary>
-    public class ItemCollection3D : ICollectionView
+    public class ItemCollection3D : ICollectionView, IList, ICollection
     {
         // , IList, ICollection
         /// <summary>
@@ -99,6 +97,7 @@ namespace HelixPerfBox
             {
                 _collectionView = new CollectionView(Enumerable.Empty<object>());
             }
+
             _collectionView.Refresh();
         }
 
@@ -124,120 +123,206 @@ namespace HelixPerfBox
             }
         }
 
-        // #region ICollection & ILIst
+        #region ICollection & ILIst
 
-        // bool ICollection.IsSynchronized
-        // {
-        // get { return false; }
-        // }
+        /// <summary>
+        /// Gets a value indicating whether is synchronized.
+        /// </summary>
+        bool ICollection.IsSynchronized
+        {
+            get { return false; }
+        }
 
-        // object ICollection.SyncRoot
-        // {
-        // get
-        // {
-        // if (this.IsUsingItemsSource)
-        // throw new NotSupportedException("ItemCollectionShouldUseInnerSyncRoot");
-        // else
-        // return ((ICollection)_items).SyncRoot;
-        // }
-        // }
+        /// <summary>
+        /// Gets the sync root.
+        /// </summary>
+        /// <exception cref="NotSupportedException">
+        /// </exception>
+        object ICollection.SyncRoot
+        {
+            get
+            {
+                if (IsUsingItemsSource)
+                    throw new NotSupportedException("ItemCollectionShouldUseInnerSyncRoot");
+                else
+                    return ((ICollection)_items).SyncRoot;
+            }
+        }
 
-        // bool IList.IsFixedSize
-        // {
-        // get { return this.IsUsingItemsSource; }
-        // }
+        /// <summary>
+        /// Gets a value indicating whether is fixed size.
+        /// </summary>
+        bool IList.IsFixedSize
+        {
+            get { return IsUsingItemsSource; }
+        }
 
-        // bool IList.IsReadOnly
-        // {
-        // get { return this.IsUsingItemsSource; }
-        // }
+        /// <summary>
+        /// Gets a value indicating whether is read only.
+        /// </summary>
+        bool IList.IsReadOnly
+        {
+            get { return IsUsingItemsSource; }
+        }
 
-        // public int Add(object newItem)
-        // {
-        // _items.Add(newItem);
-        // Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
-        // return _collectionView.IndexOf(newItem);
-        // }
+        /// <summary>
+        /// The add.
+        /// </summary>
+        /// <param name="newItem">
+        /// The new item.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public int Add(object newItem)
+        {
+            _items.Add(newItem);
+            Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
+            return _items.Count - 1;
+        }
 
-        // public void Clear()
-        // {
-        // _items.Clear();
-        // this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-        // }
+        /// <summary>
+        /// The clear.
+        /// </summary>
+        public void Clear()
+        {
+            _items.Clear();
+            Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        }
 
-        // public void CopyTo(Array array, int index)
-        // {
-        // if (array == null)
-        // throw new ArgumentNullException("array");
-        // if (array.Rank > 1)
-        // throw new ArgumentException("array.Rank > 1");
-        // if (index < 0)
-        // throw new ArgumentOutOfRangeException("index");
-        // _collectionView.Cast<object>().ToArray().CopyTo(array, index);
-        // }
+        /// <summary>
+        /// The copy to.
+        /// </summary>
+        /// <param name="array">
+        /// The array.
+        /// </param>
+        /// <param name="index">
+        /// The index.
+        /// </param>
+        /// <exception cref="ArgumentNullException">
+        /// </exception>
+        /// <exception cref="ArgumentException">
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
+        public void CopyTo(Array array, int index)
+        {
+            if (array == null)
+                throw new ArgumentNullException("array");
+            if (array.Rank > 1)
+                throw new ArgumentException("array.Rank > 1");
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index");
+            _collectionView.Cast<object>().ToArray().CopyTo(array, index);
+        }
 
-        // public int Count { get { return _collectionView.Count(); } }
+        /// <summary>
+        /// Gets the count.
+        /// </summary>
+        public int Count { get { return _items.Count; } }
 
-        // public int IndexOf(object item)
-        // {
-        // return _collectionView.IndexOf(item);
-        // }
+        /// <summary>
+        /// The index of.
+        /// </summary>
+        /// <param name="item">
+        /// The item.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/>.
+        /// </returns>
+        public int IndexOf(object item)
+        {
+            return _items.IndexOf(item);
+        }
 
-        // public object GetItemAt(int index)
-        // {
-        // if (index < 0)
-        // throw new ArgumentOutOfRangeException("index");
-        // if (index >= this._collectionView.Count)
-        // throw new ArgumentOutOfRangeException("index");
-        // else
-        // return this._collectionView.GetItemAt(index);
-        // }
+        /// <summary>
+        /// The get item at.
+        /// </summary>
+        /// <param name="index">
+        /// The index.
+        /// </param>
+        /// <returns>
+        /// The <see cref="object"/>.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// </exception>
+        public object GetItemAt(int index)
+        {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException("index");
+            if (index >= _items.Count)
+                throw new ArgumentOutOfRangeException("index");
+            else
+                return _items[index];
+        }
 
-        // public void Insert(int insertIndex, object insertItem)
-        // {
-        // if (insertIndex == 0)
-        // {
-        // _items.Insert(insertIndex, insertItem);
-        // }
-        // else
-        // {
-        // var indexOf = _items.IndexOf(_collectionView.GetItemAt(insertIndex));
-        // _items.Insert(indexOf, insertItem);
-        // }
-        // this.Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
-        // }
+        /// <summary>
+        /// The insert.
+        /// </summary>
+        /// <param name="insertIndex">
+        /// The insert index.
+        /// </param>
+        /// <param name="insertItem">
+        /// The insert item.
+        /// </param>
+        public void Insert(int insertIndex, object insertItem)
+        {
+            _items.Insert(insertIndex, insertItem);
+            Parent.SetValue(ItemsControl3D.HasItemsPropertyKey, true);
+        }
 
-        // public void Remove(object removeItem)
-        // {
-        // _items.Remove(removeItem);
-        // if (!this.IsEmpty)
-        // return;
-        // this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-        // }
+        /// <summary>
+        /// The remove.
+        /// </summary>
+        /// <param name="removeItem">
+        /// The remove item.
+        /// </param>
+        public void Remove(object removeItem)
+        {
+            _items.Remove(removeItem);
+            if (!IsEmpty)
+                return;
+            Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        }
 
-        // public void RemoveAt(int removeIndex)
-        // {
-        // _collectionView.RemoveAt(removeIndex);
-        // if (!this.IsEmpty)
-        // return;
-        // this.Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
-        // }
+        /// <summary>
+        /// The remove at.
+        /// </summary>
+        /// <param name="removeIndex">
+        /// The remove index.
+        /// </param>
+        public void RemoveAt(int removeIndex)
+        {
+            _items.RemoveAt(removeIndex);
+            if (!IsEmpty)
+                return;
+            Parent.ClearValue(ItemsControl3D.HasItemsPropertyKey);
+        }
 
-        // public object this[int index]
-        // {
-        // get
-        // {
-        // return _collectionView.GetItemAt(index);
-        // }
-        // set
-        // {
-        // var itemAt = _collectionView.GetItemAt(index);
-        // var indexOf = _items.IndexOf(itemAt);
-        // _items[indexOf] = value; // Not efficient nor nice here
-        // }
-        // }
+        /// <summary>
+        /// The this.
+        /// </summary>
+        /// <param name="index">
+        /// The index.
+        /// </param>
+        /// <returns>
+        /// The <see cref="object"/>.
+        /// </returns>
+        public object this[int index]
+        {
+            get
+            {
+                return _items[index];
+            }
 
-        // #endregion ICollection & ILIst
+            set
+            {
+                _items[index] = value;
+            }
+        }
+
+        #endregion ICollection & ILIst
+
         #region ICollectionView
 
         /// <summary>

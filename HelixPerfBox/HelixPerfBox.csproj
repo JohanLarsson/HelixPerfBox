@@ -66,9 +66,18 @@
     <Compile Include="HelixStuff\ItemContainer3D.cs" />
     <Compile Include="HelixStuff\ItemContainerGenerator3D.cs" />
     <Compile Include="HelixStuff\UiElementItemContainerGenerator.cs" />
+    <Compile Include="ItemsControlItemsSource.xaml.cs">
+      <DependentUpon>ItemsControlItemsSource.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ItemsControlXaml.xaml.cs">
+      <DependentUpon>ItemsControlXaml.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Reflection\BindingHelper.cs" />
     <Compile Include="HelixStuff\UIElementItemContainer3D.cs" />
     <Compile Include="HelixStuff\ItemCollection3D.cs" />
+    <Compile Include="Reflection\DataContextProxy.cs" />
+    <Compile Include="Reflection\DependencyObjectExt.cs" />
+    <Compile Include="Reflection\FrameworkElementExt.cs" />
     <Compile Include="Reflection\FreezableExt.cs" />
     <Compile Include="Reflection\Helper.cs" />
     <Compile Include="Reflection\ItemsCollectionExt.cs" />
@@ -115,7 +124,21 @@
     <Compile Include="Reflection\Visual3DCollectionExt.cs" />
     <Compile Include="HelixStuff\Selector3D.cs" />
     <Compile Include="HelixStuff\TemplateModel.cs" />
+    <Compile Include="SelectorItemsSource.xaml.cs">
+      <DependentUpon>SelectorItemsSource.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="SelectorXaml.xaml.cs">
+      <DependentUpon>SelectorXaml.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModel.cs" />
+    <Page Include="ItemsControlItemsSource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ItemsControlXaml.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -128,6 +151,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SelectorItemsSource.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SelectorXaml.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

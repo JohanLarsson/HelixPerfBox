@@ -9,6 +9,7 @@
 
 namespace HelixPerfBox
 {
+    using System.Collections.Specialized;
     using System.Windows.Media.Media3D;
 
     /// <summary>
