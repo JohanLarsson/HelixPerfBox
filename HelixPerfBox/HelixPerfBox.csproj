@@ -75,7 +75,7 @@
     <Compile Include="Reflection\BindingHelper.cs" />
     <Compile Include="HelixStuff\UIElementItemContainer3D.cs" />
     <Compile Include="HelixStuff\ItemCollection3D.cs" />
-    <Compile Include="Reflection\DataContextProxy.cs" />
+    <Compile Include="HelixStuff\DataContextProxy.cs" />
     <Compile Include="Reflection\DependencyObjectExt.cs" />
     <Compile Include="Reflection\FrameworkElementExt.cs" />
     <Compile Include="Reflection\FreezableExt.cs" />
@@ -124,6 +124,9 @@
     <Compile Include="Reflection\Visual3DCollectionExt.cs" />
     <Compile Include="HelixStuff\Selector3D.cs" />
     <Compile Include="HelixStuff\TemplateModel.cs" />
+    <Compile Include="SandBox.xaml.cs">
+      <DependentUpon>SandBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SelectorItemsSource.xaml.cs">
       <DependentUpon>SelectorItemsSource.xaml</DependentUpon>
     </Compile>
@@ -151,6 +154,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SandBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SelectorItemsSource.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

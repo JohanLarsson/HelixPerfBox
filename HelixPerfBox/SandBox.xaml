@@ -1,0 +1,39 @@
+﻿<UserControl x:Class="HelixPerfBox.SandBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:h="http://helix-toolkit.org/wpf"
+             xmlns:helixPerfBox="clr-namespace:HelixPerfBox"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DataContext="{d:DesignInstance helixPerfBox:ViewModel}"
+             d:DesignHeight="300"
+             d:DesignWidth="300"
+             mc:Ignorable="d">
+    <DockPanel>
+        <ListBox x:Name="FillBox"
+                 DockPanel.Dock="Top"
+                 Style="{StaticResource FillBoxStyle}" />
+        <StatusBar DockPanel.Dock="Bottom">
+            <TextBlock x:Name="Status" />
+        </StatusBar>
+        <h:HelixViewport3D x:Name="SandboxViewPort" ZoomExtentsWhenLoaded="True">
+            <h:SunLight />
+            <ContainerUIElement3D MouseLeftButtonDown="OnClick">
+                <h:SphereVisual3D Center="0,0,0"
+                                  Fill="{Binding SelectedItem,
+                                                 ElementName=FillBox}"
+                                  Radius="1" />
+            </ContainerUIElement3D>
+
+            <helixPerfBox:UIElementItemContainer3D x:Name="UiElementItemContainer3D"
+                                                   DataContext="{Binding SubVm}"
+                                                   MouseLeftButtonUp="OnClick">
+                <h:SphereVisual3D Center="3,0,0"
+                                  Fill="{Binding SelectedItem,
+                                                 ElementName=FillBox}"
+                                  Radius="{Binding VmRadius}" />
+            </helixPerfBox:UIElementItemContainer3D>
+
+        </h:HelixViewport3D>
+    </DockPanel>
+</UserControl>

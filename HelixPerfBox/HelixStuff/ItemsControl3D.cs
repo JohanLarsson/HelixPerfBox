@@ -22,7 +22,7 @@ namespace HelixPerfBox
     /// </summary>
     [ContentProperty("Items")]
     [DefaultEvent("OnItemsChanged")]
-    [DefaultProperty("Items")]
+    //[DefaultProperty("Items")]
     public class ItemsControl3D : ModelVisual3D
     {
         /// <summary>
@@ -131,7 +131,7 @@ namespace HelixPerfBox
         /// </returns>
         protected internal Visual3D GetContainerForItem(object item)
         {
-            return _itemContainerGenerator.GetContainerForItem(item);
+            return _itemContainerGenerator.GetContainerOrDefaultForItem(item);
         }
 
         /// <summary>

@@ -27,34 +27,11 @@ namespace HelixPerfBox
     [Localizability(LocalizationCategory.NeverLocalize)] // All properties on template are not localizable
     public class TemplateModel : Freezable, INameScope
     {
-        /// <summary>
-        /// The _data type.
-        /// </summary>
         private Type _dataType;
-
-        /// <summary>
-        /// The _data type properties.
-        /// </summary>
         private PropertyInfo[] _dataTypeProperties;
-
-        /// <summary>
-        /// The _model.
-        /// </summary>
         private ModelVisual3D _model;
-
-        /// <summary>
-        /// The _dependency properties.
-        /// </summary>
         private IEnumerable<DependencyProperty> _dependencyProperties;
-
-        /// <summary>
-        /// The _bindings.
-        /// </summary>
         private IEnumerable<Binding> _bindings;
-
-        /// <summary>
-        /// The _binding expressions.
-        /// </summary>
         private IEnumerable<BindingExpressionBase> _bindingExpressions;
 
         /// <summary>
@@ -253,8 +230,13 @@ namespace HelixPerfBox
         /// </summary>
         /// <exception cref="ArgumentException">
         /// </exception>
+        [Obsolete("Remove this when we figure out how to set DataContext for designtime")]
         private void VerifyBindings()
         {
+            if (!DesignerProperties.GetIsInDesignMode(this))
+            {
+                return;
+            }
             if (_bindingExpressions == null)
             {
                 return;
@@ -281,6 +263,5 @@ namespace HelixPerfBox
                 }
             }
         }
-
     }
 }

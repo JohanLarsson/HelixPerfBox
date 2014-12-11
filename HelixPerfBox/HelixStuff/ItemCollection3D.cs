@@ -22,36 +22,10 @@ namespace HelixPerfBox
     /// </summary>
     public class ItemCollection3D : ICollectionView, IList, ICollection
     {
-        // , IList, ICollection
-        /// <summary>
-        /// The _parent.
-        /// </summary>
         private readonly WeakReference _parent;
-
-        /// <summary>
-        /// The _items.
-        /// </summary>
         private readonly ObservableCollection<object> _items = new ObservableCollection<object>();
-
-        /// <summary>
-        /// The _collection view.
-        /// </summary>
         private ICollectionView _collectionView;
-
-        /// <summary>
-        /// The _collection view source.
-        /// </summary>
-        private readonly CollectionViewSource _collectionViewSource = new CollectionViewSource();
-
-        /// <summary>
-        /// The _is using items source.
-        /// </summary>
         private bool _isUsingItemsSource;
-
-        /// <summary>
-        /// The _items source changed descriptor.
-        /// </summary>
-        private readonly DependencyPropertyDescriptor _itemsSourceChangedDescriptor = DependencyPropertyDescriptor.FromProperty(ItemsControl3D.ItemsSourceProperty, typeof(ItemsControl3D));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ItemCollection3D"/> class.
@@ -62,7 +36,14 @@ namespace HelixPerfBox
         internal ItemCollection3D(ItemsControl3D parent)
         {
             _parent = new WeakReference(parent);
-            SetItemsSource(parent.ItemsSource ?? _items);
+            if (parent.ItemsSource != null)
+            {
+                SetItemsSource(parent.ItemsSource);
+            }
+            else
+            {
+                CreateCollectionView(_items);
+            }
         }
 
         /// <summary>
@@ -70,7 +51,7 @@ namespace HelixPerfBox
         /// </summary>
         public void ClearItemsSource()
         {
-            SetItemsSource(Enumerable.Empty<object>());
+            SetItemsSource(null);
         }
 
         /// <summary>
@@ -82,23 +63,28 @@ namespace HelixPerfBox
         public void SetItemsSource(IEnumerable newValue)
         {
             _isUsingItemsSource = true;
-
             CollectionChangedEventManager.RemoveHandler(_collectionView, OnCollectionChanged);
             CurrentChangingEventManager.RemoveHandler(_collectionView, OnCurrentChanging);
             CurrentChangedEventManager.RemoveHandler(_collectionView, OnCurrentChanged);
+            _items.Clear();
+            CreateCollectionView(newValue);
+        }
+
+        private void CreateCollectionView(IEnumerable newValue)
+        {
             if (newValue != null)
             {
                 _collectionView = CollectionViewSource.GetDefaultView(newValue);
                 CollectionChangedEventManager.AddHandler(_collectionView, OnCollectionChanged);
                 CurrentChangingEventManager.AddHandler(_collectionView, OnCurrentChanging);
                 CurrentChangedEventManager.AddHandler(_collectionView, OnCurrentChanged);
+                _collectionView.Refresh();
             }
             else
             {
                 _collectionView = new CollectionView(Enumerable.Empty<object>());
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
-
-            _collectionView.Refresh();
         }
 
         /// <summary>
@@ -233,27 +219,6 @@ namespace HelixPerfBox
         public int IndexOf(object item)
         {
             return _items.IndexOf(item);
-        }
-
-        /// <summary>
-        /// The get item at.
-        /// </summary>
-        /// <param name="index">
-        /// The index.
-        /// </param>
-        /// <returns>
-        /// The <see cref="object"/>.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// </exception>
-        public object GetItemAt(int index)
-        {
-            if (index < 0)
-                throw new ArgumentOutOfRangeException("index");
-            if (index >= _items.Count)
-                throw new ArgumentOutOfRangeException("index");
-            else
-                return _items[index];
         }
 
         /// <summary>
@@ -436,7 +401,7 @@ namespace HelixPerfBox
         /// <summary>
         /// Gets the source collection.
         /// </summary>
-        public IEnumerable SourceCollection { get { return _items; } }
+        public IEnumerable SourceCollection { get { return IsUsingItemsSource ? Parent.ItemsSource : _items; } }
 
         /// <summary>
         /// Gets or sets the filter.

@@ -40,7 +40,10 @@ namespace HelixPerfBox
         {
             PropertyChangedEventManager.AddHandler(this, (_, __) => CreateBalls(Side), "Side");
             CreateBalls(5);
+            SubVm = new SubVm();
         }
+
+        public SubVm SubVm { get; private set; }
 
         /// <summary>
         /// The property changed.
@@ -227,6 +230,14 @@ namespace HelixPerfBox
                     _balls.Add(new Ball(new Point3D(x, y, 0), 0.3));
                 }
             }
+        }
+    }
+
+    public class SubVm
+    {
+        public double VmRadius
+        {
+            get { return 2.2; }
         }
     }
 }

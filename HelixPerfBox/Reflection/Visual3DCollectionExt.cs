@@ -27,7 +27,7 @@ namespace HelixPerfBox
         /// <returns>
         /// The <see cref="Visual3DCollection"/>.
         /// </returns>
-        public static Visual3DCollection Create(Selector3D  owner)
+        public static Visual3DCollection Create(Visual3D  owner)
         {
             var ctor = typeof(Visual3DCollection).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).Single();
             var col = (Visual3DCollection)ctor.Invoke(new object[] { owner });

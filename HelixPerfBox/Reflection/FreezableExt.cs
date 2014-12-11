@@ -50,7 +50,7 @@ namespace HelixPerfBox
         public static void SetDataContextProxy(this Freezable element, object value)
         {
             var proxy = new DataContextProxy { DataContext = value }; // Must use a proxy here. If it is set on the Freezable the framework will SO when AddInheritanceContext is called.
-            proxy.AddLogicalChild(element);
+            //proxy.AddLogicalChild(element);
             element.SetValue(DataContextProxyProperty, proxy);
         }
 

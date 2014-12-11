@@ -39,6 +39,7 @@ namespace HelixPerfBox
         {
             var modelVisual3D = base.CreateNewContainer(item);
             var container3D = new UIElementItemContainer3D(modelVisual3D);
+            container3D.DataContext = item;
             return container3D;
         }
     }

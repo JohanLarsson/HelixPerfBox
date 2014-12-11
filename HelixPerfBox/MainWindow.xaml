@@ -13,52 +13,27 @@
         mc:Ignorable="d">
     <Grid>
         <TabControl>
-            <!--
-                <TabItem Header="ItemsControlItemsSource">
+
+            <TabItem Header="ItemsControlItemsSource">
                 <local:ItemsControlItemsSource />
-                </TabItem>
-            -->
+            </TabItem>
 
-            <!--
-                <TabItem Header="ItemsControlXaml">
+            <TabItem Header="ItemsControlXaml">
                 <local:ItemsControlXaml />
-                </TabItem>
-            -->
+            </TabItem>
 
-            
-                <!--<TabItem Header="SelectorItemsSource">
+            <TabItem Header="SelectorItemsSource">
                 <local:SelectorItemsSource />
-                </TabItem>-->
-            
+            </TabItem>
 
-            
-                <TabItem Header="SelectorXaml">
+            <TabItem Header="SelectorXaml">
                 <local:SelectorXaml />
-                </TabItem>
-            
+            </TabItem>
 
-            <!--
-                <TabItem Header="Sandbox">
-                <h:HelixViewport3D x:Name="SandboxViewPort" ZoomExtentsWhenLoaded="True">
-                <h:SunLight />
-                
-                <local:ItemsControl3D>
-                <h:SphereVisual3D Center="1,0,0"
-                Fill="Red"
-                Radius="0.1" />
-                <h:SphereVisual3D Center="2,0,0"
-                Fill="Blue"
-                Radius="0.1" />
-                <h:SphereVisual3D Center="3,0,0"
-                Fill="{Binding SelectedItem,
-                ElementName=FillBox}"
-                Radius="0.1" />
-                </local:ItemsControl3D>
-                
-                
-                </h:HelixViewport3D>
-                </TabItem>
-            -->
+            <TabItem Header="Sandbox">
+                <local:SandBox />
+            </TabItem>
+
         </TabControl>
     </Grid>
 </Window>

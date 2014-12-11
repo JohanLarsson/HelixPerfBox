@@ -122,6 +122,11 @@ namespace HelixPerfBox
         {
             if (!_map.TryGetValue(item, out visual))
             {
+                visual = item as Visual3D; // Not wrapped
+                if (visual != null)
+                {
+                    return true;
+                }
                 return false;
             }
 
@@ -174,6 +179,7 @@ namespace HelixPerfBox
         /// <summary>
         /// The generate next.
         /// </summary>
+        /// <param name="item"></param>
         /// <param name="isNewlyRealized">
         /// The is newly realized.
         /// </param>
@@ -261,9 +267,9 @@ namespace HelixPerfBox
             {
                 var container = GenerateNext(newItem);
                 LinkContainerForItem(container, newItem, Parent);
-                if(!ReferenceEquals(container, newItem))
+                if (!ReferenceEquals(container, newItem))
                 {
-                   Parent.ItemTemplate.SetBindings(container, newItem);
+                    Parent.ItemTemplate.SetBindings(container, newItem);
                 }
                 Parent.Children.Add(container);
                 Dispatcher.Yield();

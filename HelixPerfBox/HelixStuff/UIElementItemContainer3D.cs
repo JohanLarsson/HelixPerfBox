@@ -11,6 +11,7 @@ namespace HelixPerfBox
 {
     using System;
     using System.ComponentModel;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Input;
@@ -19,6 +20,7 @@ namespace HelixPerfBox
     using System.Windows.Media.Media3D;
 
     using HelixToolkit.Wpf;
+    using Reflection;
 
     // ReSharper disable once InconsistentNaming
     /// <summary>
@@ -57,21 +59,17 @@ namespace HelixPerfBox
         public static readonly DependencyProperty ItemProperty = ItemContainer3D.ItemProperty.AddOwner(
             typeof(UIElementItemContainer3D));
 
-        /// <summary>
-        /// The _parent.
-        /// </summary>
         private readonly WeakReference _parent = new WeakReference(null);
-
-        /// <summary>
-        /// The _child.
-        /// </summary>
-        private Visual3D _child;
+        private readonly DataContextProxy _dataContextProxy = new DataContextProxy();
+        private readonly Visual3DCollection _children;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UIElementItemContainer3D"/> class.
         /// </summary>
         public UIElementItemContainer3D()
         {
+            _children = Visual3DCollectionExt.Create(this);
+            _dataContextProxy.SetAsInheritanceContextFor(this);
         }
 
         /// <summary>
@@ -101,32 +99,13 @@ namespace HelixPerfBox
         /// <summary>
         /// Gets or sets the child.
         /// </summary>
-        [Obsolete("Visual3DModel = modelVisual3D.Content; can't be right")]
         public Visual3D Child
         {
-            get { return _child; }
+            get { return _children.FirstOrDefault(); }
             set
             {
-                if (Equals(_child, value))
-                {
-                    return;
-                }
-
-                if (_child != null)
-                {
-                    RemoveVisual3DChild(_child);
-                }
-
-                _child = value;
-                if (_child != null)
-                {
-                    AddVisual3DChild(_child);
-                    //var modelVisual3D = _child as ModelVisual3D;
-                    //if (modelVisual3D != null)
-                    //{
-                    //    Visual3DModel = modelVisual3D.Content;
-                    //}
-                }
+                _children.Clear();
+                _children.Add(value);
             }
         }
 
@@ -198,10 +177,7 @@ namespace HelixPerfBox
         /// </summary>
         protected override int Visual3DChildrenCount
         {
-            get
-            {
-                return Child == null ? 0 : 1;
-            }
+            get { return _children.Count; }
         }
 
         /// <summary>
@@ -217,12 +193,7 @@ namespace HelixPerfBox
         /// </exception>
         protected override Visual3D GetVisual3DChild(int index)
         {
-            if (Child == null || index != 0)
-            {
-                throw new ArgumentOutOfRangeException("index");
-            }
-
-            return Child;
+            return _children[index];
         }
 
         /// <summary>
@@ -290,6 +261,8 @@ namespace HelixPerfBox
 
         private static void OnDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
+            var itemContainer3D = (UIElementItemContainer3D) d;
+            itemContainer3D._dataContextProxy.DataContext = e.NewValue;
         }
     }
 }
