@@ -27,7 +27,7 @@
 
             <helixPerfBox:UIElementItemContainer3D x:Name="UiElementItemContainer3D"
                                                    DataContext="{Binding SubVm}"
-                                                   MouseLeftButtonUp="OnClick">
+                                                   MouseLeftButtonUp="OnClick" >
                 <h:SphereVisual3D Center="3,0,0"
                                   Fill="{Binding SelectedItem,
                                                  ElementName=FillBox}"

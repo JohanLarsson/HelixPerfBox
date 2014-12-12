@@ -37,6 +37,11 @@ namespace HelixPerfBox
         /// </returns>
         protected override Visual3D CreateNewContainer(object item)
         {
+            var itemContainer3D = item as UIElementItemContainer3D;
+            if (itemContainer3D != null)
+            {
+                return itemContainer3D;
+            }
             var modelVisual3D = base.CreateNewContainer(item);
             var container3D = new UIElementItemContainer3D(modelVisual3D);
             container3D.DataContext = item;

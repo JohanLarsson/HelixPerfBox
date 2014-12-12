@@ -23,10 +23,12 @@
                                   Fill="{Binding SelectedItem,
                                                  ElementName=FillBox}"
                                   Radius="0.1" />
+                
                 <h:SphereVisual3D Center="2,0,0"
                                   Fill="{Binding SelectedItem,
                                                  ElementName=FillBox}"
                                   Radius="0.1" />
+                
                 <h:SphereVisual3D Center="3,0,0"
                                   Fill="{Binding SelectedItem,
                                                  ElementName=FillBox}"

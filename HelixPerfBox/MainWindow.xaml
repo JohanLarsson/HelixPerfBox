@@ -14,7 +14,7 @@
     <Grid>
         <TabControl>
 
-            <TabItem Header="ItemsControlItemsSource">
+            <!--<TabItem Header="ItemsControlItemsSource">
                 <local:ItemsControlItemsSource />
             </TabItem>
 
@@ -24,15 +24,15 @@
 
             <TabItem Header="SelectorItemsSource">
                 <local:SelectorItemsSource />
-            </TabItem>
+            </TabItem>-->
 
             <TabItem Header="SelectorXaml">
                 <local:SelectorXaml />
             </TabItem>
 
-            <TabItem Header="Sandbox">
+            <!--<TabItem Header="Sandbox">
                 <local:SandBox />
-            </TabItem>
+            </TabItem>-->
 
         </TabControl>
     </Grid>

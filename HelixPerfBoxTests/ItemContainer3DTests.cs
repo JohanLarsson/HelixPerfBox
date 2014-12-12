@@ -48,10 +48,11 @@
         [Test]
         public void DataContextProxy()
         {
-            var dataContextProxy = new DataContextProxy { DataContext = _vm };
-            Assert.IsTrue(dataContextProxy.IsInitialized);
-            dataContextProxy.AddLogicalChild(_container);
-            Assert.AreEqual(2, _sphere.Radius);
+            Assert.Fail();
+            //var dataContextProxy = new DataContextProxy { DataContext = _vm };
+            //Assert.IsTrue(dataContextProxy.IsInitialized);
+            //dataContextProxy.AddLogicalChild(_container);
+            //Assert.AreEqual(2, _sphere.Radius);
         }
 
         [Test]

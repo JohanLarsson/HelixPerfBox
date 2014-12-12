@@ -12,6 +12,7 @@ namespace HelixPerfBox
     using System;
     using System.ComponentModel;
     using System.Linq;
+    using System.Runtime.InteropServices;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Input;
@@ -59,16 +60,17 @@ namespace HelixPerfBox
         public static readonly DependencyProperty ItemProperty = ItemContainer3D.ItemProperty.AddOwner(
             typeof(UIElementItemContainer3D));
 
+        private static readonly DependencyProperty[] MaterialProperties = { MeshElement3D.MaterialProperty, MeshElement3D.FillProperty };
+
         private readonly WeakReference _parent = new WeakReference(null);
         private readonly DataContextProxy _dataContextProxy = new DataContextProxy();
-        private readonly Visual3DCollection _children;
+        private Visual3D _child;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="UIElementItemContainer3D"/> class.
         /// </summary>
         public UIElementItemContainer3D()
         {
-            _children = Visual3DCollectionExt.Create(this);
             _dataContextProxy.SetAsInheritanceContextFor(this);
         }
 
@@ -101,11 +103,22 @@ namespace HelixPerfBox
         /// </summary>
         public Visual3D Child
         {
-            get { return _children.FirstOrDefault(); }
+            get { return _child; }
             set
             {
-                _children.Clear();
-                _children.Add(value);
+                if (Equals(value, _child))
+                {
+                    return;
+                }
+                if (_child != null)
+                {
+                    RemoveVisual3DChild(_child);
+                }
+                if (value != null)
+                {
+                    _child = value;
+                    AddVisual3DChild(value);
+                }
             }
         }
 
@@ -177,7 +190,7 @@ namespace HelixPerfBox
         /// </summary>
         protected override int Visual3DChildrenCount
         {
-            get { return _children.Count; }
+            get { return _child == null ? 0 : 1; }
         }
 
         /// <summary>
@@ -193,7 +206,11 @@ namespace HelixPerfBox
         /// </exception>
         protected override Visual3D GetVisual3DChild(int index)
         {
-            return _children[index];
+            if (index != 0 || _child == null)
+            {
+                throw new ArgumentOutOfRangeException("index");
+            }
+            return _child;
         }
 
         /// <summary>
@@ -209,11 +226,7 @@ namespace HelixPerfBox
             {
                 return;
             }
-            var geometryModel3D = modelVisual3D.Content as GeometryModel3D;
-            if (geometryModel3D == null)
-            {
-                return;
-            }
+
             var parent = Parent;
             if (IsSelected)
             {
@@ -221,8 +234,8 @@ namespace HelixPerfBox
                 {
                     parent.SelectedItem = Item;
                 }
-                geometryModel3D.SetCurrentValue(OriginalMaterialProperty, geometryModel3D.Material);
-                geometryModel3D.SetCurrentValue(GeometryModel3D.MaterialProperty, Materials.Orange);
+                var selectedMaterial = Materials.Orange;
+                SetSelectedColor(modelVisual3D, selectedMaterial);
             }
             else
             {
@@ -230,16 +243,11 @@ namespace HelixPerfBox
                 {
                     parent.SelectedItem = null;
                 }
+                var reset = (Material)modelVisual3D.GetValue(OriginalMaterialProperty);
 
-                var binding = BindingOperations.GetBindingExpressionBase(geometryModel3D, GeometryModel3D.MaterialProperty);
-                if (binding != null)
+                if (!TryResetMaterialFromBinding(modelVisual3D, reset))
                 {
-                    binding.UpdateTarget();
-                }
-                else
-                {
-                    var reset = geometryModel3D.GetValue(OriginalMaterialProperty);
-                    geometryModel3D.SetCurrentValue(GeometryModel3D.MaterialProperty, reset);
+                    SetSelectedColor(modelVisual3D, reset);
                 }
             }
         }
@@ -261,8 +269,57 @@ namespace HelixPerfBox
 
         private static void OnDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var itemContainer3D = (UIElementItemContainer3D) d;
+            var itemContainer3D = (UIElementItemContainer3D)d;
             itemContainer3D._dataContextProxy.DataContext = e.NewValue;
+        }
+
+        private bool TryResetMaterialFromBinding(ModelVisual3D modelVisual3D, Material reset)
+        {
+            var meshElement3D = modelVisual3D as MeshElement3D;
+            var bindingExpression = GetMaterialBinding(meshElement3D);
+            if (meshElement3D != null && bindingExpression != null)
+            {
+                meshElement3D.SetCurrentValue(MeshElement3D.MaterialProperty, reset);
+                bindingExpression.UpdateTarget();
+                return true;
+            }
+            var geometryModel3D = modelVisual3D.Content as GeometryModel3D;
+            bindingExpression = GetMaterialBinding(geometryModel3D);
+            if (geometryModel3D != null && bindingExpression != null)
+            {
+                geometryModel3D.SetCurrentValue(GeometryModel3D.MaterialProperty, reset);
+                bindingExpression.UpdateTarget();
+                return true;
+            }
+            return false;
+        }
+
+        private BindingExpression GetMaterialBinding(DependencyObject visual)
+        {
+            if (visual == null)
+            {
+                return null;
+            }
+            var bindingExpression = MaterialProperties.Select(x => BindingOperations.GetBindingExpression(visual, x))
+                                                      .FirstOrDefault(x => x != null);
+            return bindingExpression;
+        }
+
+        private void SetSelectedColor(ModelVisual3D modelVisual3D, Material selectedMaterial)
+        {
+            var meshElement3D = Child as MeshElement3D;
+            if (meshElement3D != null)
+            {
+                meshElement3D.SetValue(OriginalMaterialProperty, meshElement3D.Material);
+                meshElement3D.SetCurrentValue(MeshElement3D.MaterialProperty, selectedMaterial);
+                return;
+            }
+            var geometryModel3D = modelVisual3D.Content as GeometryModel3D;
+            if (geometryModel3D != null)
+            {
+                geometryModel3D.SetValue(OriginalMaterialProperty, geometryModel3D.Material);
+                geometryModel3D.SetCurrentValue(GeometryModel3D.MaterialProperty, selectedMaterial);
+            }
         }
     }
 }

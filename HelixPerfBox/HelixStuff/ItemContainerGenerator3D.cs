@@ -60,7 +60,7 @@ namespace HelixPerfBox
         {
             get
             {
-                return (ItemsControl3D)_parent.Target;
+                return _parent.Target as ItemsControl3D;
             }
         }
 
@@ -188,17 +188,12 @@ namespace HelixPerfBox
         /// </returns>
         protected virtual Visual3D GenerateNext(object item, out bool isNewlyRealized)
         {
-            if (item is Visual3D)
-            {
-                isNewlyRealized = false;
-                return item as Visual3D;
-            }
             Visual3D visual3D;
             isNewlyRealized = false;
             if (!_cache.TryDequeue(out visual3D))
             {
                 visual3D = CreateNewContainer(item);
-                isNewlyRealized = true;
+                isNewlyRealized = visual3D != item;
             }
 
             return visual3D;
@@ -246,7 +241,7 @@ namespace HelixPerfBox
         protected virtual void Remove(Visual3D container)
         {
             Parent.Children.Remove(container);
-            UnlinkContainerFromItem(container, Parent);
+            UnlinkContainerFromItem(container);
             Recycle(container);
         }
 
@@ -266,8 +261,8 @@ namespace HelixPerfBox
             foreach (var newItem in newItems)
             {
                 var container = GenerateNext(newItem);
-                LinkContainerForItem(container, newItem, Parent);
-                if (!ReferenceEquals(container, newItem))
+                LinkContainerForItem(container, newItem);
+                if (!ReferenceEquals(container, newItem)  && Parent.ItemTemplate != null)
                 {
                     Parent.ItemTemplate.SetBindings(container, newItem);
                 }
@@ -296,7 +291,7 @@ namespace HelixPerfBox
         /// <param name="host">
         /// The host.
         /// </param>
-        protected virtual void UnlinkContainerFromItem(Visual3D container, ItemsControl3D host)
+        protected virtual void UnlinkContainerFromItem(Visual3D container)
         {
             var item = container.GetValue(ItemContainer3D.ItemProperty);
             container.ClearValue(ItemContainer3D.ItemProperty);
@@ -318,7 +313,7 @@ namespace HelixPerfBox
         /// <param name="host">
         /// The host.
         /// </param>
-        protected virtual void LinkContainerForItem(Visual3D container, object item, ItemsControl3D host)
+        protected virtual void LinkContainerForItem(Visual3D container, object item)
         {
             if (container == item)
                 return;
@@ -370,6 +365,10 @@ namespace HelixPerfBox
         /// </returns>
         protected virtual Visual3D CreateNewContainer(object item)
         {
+            if (item is Visual3D)
+            {
+                return item as Visual3D;
+            }
             return Parent.ItemTemplate.Create();
         }
     }
