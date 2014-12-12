@@ -136,9 +136,11 @@ namespace HelixPerfBox
         /// <summary>
         /// The refresh.
         /// </summary>
-        public virtual void Refresh()
+        public virtual void OnItemTemplateChanged(TemplateModel oldItemTemplate, TemplateModel newItemTemplate)
         {
-            Reset(Parent.Items);
+            RemoveAll();
+            ClearCache();
+            Add(Parent.Items);
         }
 
         /// <summary>
@@ -152,7 +154,6 @@ namespace HelixPerfBox
         protected virtual void Reset(IEnumerable newItems)
         {
             RemoveAll();
-            ClearCache();
             Add(Parent.Items);
         }
 
@@ -262,13 +263,18 @@ namespace HelixPerfBox
             {
                 var container = GenerateNext(newItem);
                 LinkContainerForItem(container, newItem);
-                if (!ReferenceEquals(container, newItem)  && Parent.ItemTemplate != null)
+                if (!ReferenceEquals(container, newItem) && Parent.ItemTemplate != null)
                 {
-                    Parent.ItemTemplate.SetBindings(container, newItem);
+                    ApplyTemplate(container, newItem);
                 }
                 Parent.Children.Add(container);
                 Dispatcher.Yield();
             }
+        }
+
+        protected virtual void ApplyTemplate(Visual3D container, object item)
+        {
+            Parent.ItemTemplate.Rebind(container, item);
         }
 
         /// <summary>

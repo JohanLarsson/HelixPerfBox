@@ -39,11 +39,11 @@ namespace HelixPerfBox
             typeof(UIElementItemContainer3D),
             new PropertyMetadata(default(bool), OnIsSelectedChanged));
 
-        public static readonly DependencyProperty DataContextProperty = FrameworkElement.DataContextProperty.AddOwner(
-            typeof(UIElementItemContainer3D),
-            new FrameworkPropertyMetadata(
-                null, FrameworkPropertyMetadataOptions.Inherits,
-                OnDataContextChanged));
+        //public static readonly DependencyProperty DataContextProperty = FrameworkElement.DataContextProperty.AddOwner(
+        //    typeof(UIElementItemContainer3D),
+        //    new FrameworkPropertyMetadata(
+        //        null, FrameworkPropertyMetadataOptions.Inherits,
+        //        OnDataContextChanged));
 
         /// <summary>
         /// The original material property.
@@ -63,7 +63,7 @@ namespace HelixPerfBox
         private static readonly DependencyProperty[] MaterialProperties = { MeshElement3D.MaterialProperty, MeshElement3D.FillProperty };
 
         private readonly WeakReference _parent = new WeakReference(null);
-        private readonly DataContextProxy _dataContextProxy = new DataContextProxy();
+        //private readonly DataContextProxy _dataContextProxy = new DataContextProxy();
         private Visual3D _child;
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace HelixPerfBox
         /// </summary>
         public UIElementItemContainer3D()
         {
-            _dataContextProxy.SetAsInheritanceContextFor(this);
+            //_dataContextProxy.SetAsInheritanceContextFor(this);
         }
 
         /// <summary>
@@ -86,17 +86,17 @@ namespace HelixPerfBox
             Child = child;
         }
 
-        public object DataContext
-        {
-            get
-            {
-                return (object)GetValue(DataContextProperty);
-            }
-            set
-            {
-                SetValue(DataContextProperty, value);
-            }
-        }
+        //public object DataContext
+        //{
+        //    get
+        //    {
+        //        return (object)GetValue(DataContextProperty);
+        //    }
+        //    set
+        //    {
+        //        SetValue(DataContextProperty, value);
+        //    }
+        //}
 
         /// <summary>
         /// Gets or sets the child.
@@ -269,8 +269,8 @@ namespace HelixPerfBox
 
         private static void OnDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var itemContainer3D = (UIElementItemContainer3D)d;
-            itemContainer3D._dataContextProxy.DataContext = e.NewValue;
+            //var itemContainer3D = (UIElementItemContainer3D)d;
+            //itemContainer3D._dataContextProxy.DataContext = e.NewValue;
         }
 
         private bool TryResetMaterialFromBinding(ModelVisual3D modelVisual3D, Material reset)

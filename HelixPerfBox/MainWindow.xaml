@@ -20,15 +20,15 @@
 
             <TabItem Header="ItemsControlXaml">
                 <local:ItemsControlXaml />
-            </TabItem>
+            </TabItem>-->
 
             <TabItem Header="SelectorItemsSource">
                 <local:SelectorItemsSource />
-            </TabItem>-->
-
-            <TabItem Header="SelectorXaml">
-                <local:SelectorXaml />
             </TabItem>
+
+            <!--<TabItem Header="SelectorXaml">
+                <local:SelectorXaml />
+            </TabItem>-->
 
             <!--<TabItem Header="Sandbox">
                 <local:SandBox />

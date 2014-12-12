@@ -137,15 +137,15 @@ namespace HelixPerfBox
         }
 
         /// <summary>
-        /// The set bindings.
+        /// Clones the bindings and applies them with provided source 
         /// </summary>
         /// <param name="visual3D">
-        /// The visual 3 d.
+        /// The visual 3D.
         /// </param>
         /// <param name="source">
-        /// The source.
+        /// The new source for the bindings.
         /// </param>
-        public void SetBindings(Visual3D visual3D, object source)
+        public void Rebind(Visual3D visual3D, object source)
         {
             visual3D.SetBindings(_bindingExpressions, source);
         }

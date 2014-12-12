@@ -10,8 +10,6 @@
         public SandBox()
         {
             InitializeComponent();
-            var visual3D = UiElementItemContainer3D.Child;
-
         }
 
         private void OnClick(object sender, System.Windows.Input.MouseButtonEventArgs e)

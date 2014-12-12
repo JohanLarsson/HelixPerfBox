@@ -220,7 +220,7 @@ namespace HelixPerfBox
         {
             if (_itemContainerGenerator == null)
                 return;
-            _itemContainerGenerator.Refresh();
+            _itemContainerGenerator.OnItemTemplateChanged(oldItemTemplate, newItemTemplate);
         }
 
         /// <summary>
